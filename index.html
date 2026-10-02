@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Conferência de Processos SVLMAT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: barra superior fixa; início = lista de processos; processo = checklist por fase + coluna lateral de respostas, rota PG e prazos */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --surface-2:#EEF1F5; --fg:#18212D; --muted:#5B6676; --line:#D9DFE7;
+  --accent:#1D4F91; --accent-fg:#FFFFFF; --accent-soft:#E3ECF8;
+  --ok:#1B7A4C; --ok-soft:#E2F3EA; --warn:#A35E0B; --warn-soft:#FBEEDC; --bad:#B42318; --bad-soft:#FCE8E6; --na:#6B7280; --na-soft:#ECEEF1;
+  --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.06);
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10151C; --surface:#171E27; --surface-2:#1E2732; --fg:#E6EBF1; --muted:#9AA6B5; --line:#2B3644;
+  --accent:#7EA8E6; --accent-fg:#0E1620; --accent-soft:#1D2B3F;
+  --ok:#5CC48F; --ok-soft:#16302A; --warn:#E8A54F; --warn-soft:#3A2A14; --bad:#F2867B; --bad-soft:#3B1D1B; --na:#9AA3AF; --na-soft:#232B35;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#10151C; --surface:#171E27; --surface-2:#1E2732; --fg:#E6EBF1; --muted:#9AA6B5; --line:#2B3644;
+  --accent:#7EA8E6; --accent-fg:#0E1620; --accent-soft:#1D2B3F;
+  --ok:#5CC48F; --ok-soft:#16302A; --warn:#E8A54F; --warn-soft:#3A2A14; --bad:#F2867B; --bad-soft:#3B1D1B; --na:#9AA3AF; --na-soft:#232B35;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3); color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;min-width:0;flex:1}
+.brand h1{font-size:20px;font-weight:700;letter-spacing:.01em}
+.brand small{color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.mode{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.mode.db{background:var(--ok-soft);color:var(--ok)}
+.mode.local{background:var(--warn-soft);color:var(--warn)}
+
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:8px;cursor:pointer;font-weight:500;font-size:14px}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--accent);padding-inline:6px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+main{max-width:1240px;margin:0 auto;padding-block:20px 60px;padding-inline:16px}
+
+/* Início */
+.home-head{display:flex;gap:12px;align-items:end;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+.home-head h2{font-size:26px}
+.home-head p{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.filters{display:flex;gap:8px;flex-wrap:wrap;min-width:0;max-width:100%}
+.filters .inp{max-width:100%;min-width:0}
+@media (max-width:600px){.filters{width:100%}.filters .inp{flex:1 1 100%}}
+.inp{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 10px;min-width:0}
+.inp:focus{border-color:var(--accent);outline:none}
+.plist{display:flex;flex-direction:column;gap:8px}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;text-align:left;width:100%}
+.prow:hover{border-color:var(--accent)}
+.prow .l1{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;min-width:0}
+.prow .sei{font-family:var(--f-mono);font-size:14px;font-weight:500}
+.prow .obj{color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.prow .l2{color:var(--muted);font-size:13px;display:flex;gap:12px;flex-wrap:wrap}
+.prow .right{display:flex;flex-direction:column;align-items:end;gap:6px;grid-row:span 2}
+.meter{width:140px;height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden;display:flex}
+.meter i{display:block;height:100%}
+.meter .m-ok{background:var(--ok)} .meter .m-na{background:var(--na)} .meter .m-pe{background:var(--warn)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.pe{background:var(--warn-soft);color:var(--warn)} .pill.an{background:var(--accent-soft);color:var(--accent)} .pill.na{background:var(--na-soft);color:var(--na)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:20px}
+.empty h3{font-size:19px;margin-bottom:6px}
+.empty p{color:var(--muted);margin:0 0 14px;max-width:70ch}
+.mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.modc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface);cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px}
+.modc:hover{border-color:var(--accent)}
+.modc .g{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.modc b{font-family:var(--f-display);font-size:16px;font-weight:600}
+.modc span{color:var(--muted);font-size:13px}
+.modc em{font-style:normal;font-size:12px;color:var(--accent)}
+
+/* Processo */
+.back{margin-bottom:10px}
+.phead{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.phead .sei{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.phead h2{font-size:24px}
+.phead .meta{display:flex;flex-wrap:wrap;gap:8px 16px;color:var(--muted);font-size:13px}
+.counts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bigmeter{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;display:flex}
+.bigmeter i{display:block;height:100%}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){.top-in{padding-block:8px;gap:8px}.brand h1{font-size:17px}.brand small{display:none}.top .btn{padding:5px 9px;font-size:13px}.mode{font-size:11px}.phead h2{font-size:20px}}
+
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+.fase{margin-bottom:18px}
+.fase h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--f-body);font-weight:600;display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.fase h3 .fc{font-family:var(--f-mono);font-weight:500;letter-spacing:0}
+.steps{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.step{border-top:1px solid var(--line);display:grid;grid-template-columns:3px 40px minmax(0,1fr);}
+.step:first-child{border-top:0}
+.step .bar{background:transparent}
+.step.s-ok .bar{background:var(--ok)} .step.s-pend .bar{background:var(--warn)} .step.s-na .bar{background:var(--na)}
+.step .num{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding:13px 0 0 10px;font-variant-numeric:tabular-nums}
+.step .body{padding:10px 12px 10px 0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.srow{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.stitle{flex:1 1 280px;min-width:0}
+.stitle .t{font-weight:500}
+.step.s-na .stitle .t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.stitle .sub{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:2px;align-items:center}
+.chip{font-size:11px;padding:1px 7px;border-radius:5px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.chip.ref{font-family:var(--f-mono);background:var(--accent-soft);color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
+.seg button{border:0;background:var(--surface);padding:5px 10px;font-size:12.5px;cursor:pointer;border-left:1px solid var(--line);color:var(--muted);font-weight:500}
+.seg button:first-child{border-left:0}
+.seg button:hover{color:var(--fg)}
+.seg button.on.ok{background:var(--ok-soft);color:var(--ok)}
+.seg button.on.pend{background:var(--warn-soft);color:var(--warn)}
+.seg button.on.na{background:var(--na-soft);color:var(--na)}
+.seg button:disabled{cursor:not-allowed}
+.more{font-size:12.5px}
+.det{background:var(--surface-2);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.det ul{margin:0;padding-left:18px}
+.det li{margin:2px 0}
+.det .lab{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.det .base{color:var(--muted)}
+.det .fields{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:8px}
+@media (max-width:560px){.det .fields{grid-template-columns:minmax(0,1fr)}}
+.det label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.modelo{white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;max-height:220px;overflow:auto}
+.nota{font-size:13px;color:var(--fg);background:var(--warn-soft);border-radius:6px;padding:4px 8px}
+
+/* Lateral */
+.side{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.card h3{font-size:16px;font-weight:600}
+.q{display:flex;flex-direction:column;gap:4px}
+.q > span{font-size:13px;font-weight:500}
+.q small{color:var(--muted);font-size:12px}
+.tog{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start}
+.tog button{border:0;background:var(--surface);padding:4px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
+.tog button+button{border-left:1px solid var(--line)}
+.tog button.on{background:var(--accent);color:var(--accent-fg)}
+.rota{border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.rota.sem{background:var(--ok-soft)} .rota.com{background:var(--warn-soft)} .rota.na,.rota.q{background:var(--surface-2)}
+.rota b{font-family:var(--f-display);font-size:17px}
+.rota.sem b{color:var(--ok)} .rota.com b{color:var(--warn)}
+.rota span{font-size:13px}
+.alert{font-size:13px;border-radius:8px;padding:8px 10px;border-left:3px solid var(--accent);background:var(--accent-soft)}
+.alert.alto{border-color:var(--bad);background:var(--bad-soft)}
+.calc{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.calc label{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.calc .out{font-size:13px;padding:6px 8px;border-radius:6px;background:var(--surface-2)}
+.calc .out b{font-family:var(--f-mono);font-weight:500}
+.fine{font-size:11.5px;color:var(--muted)}
+
+/* Modal */
+.ov{position:fixed;inset:0;background:rgba(10,15,22,.45);display:flex;align-items:flex-start;justify-content:center;padding:max(40px,env(safe-area-inset-top,0px)) 16px 16px;z-index:50;overflow:auto}
+.dlg{background:var(--surface);border-radius:14px;box-shadow:var(--shadow);width:min(560px,100%);padding:18px;display:flex;flex-direction:column;gap:12px}
+.dlg h2{font-size:21px}
+.dlg label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500}
+.dlg .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.dlg .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.err{color:var(--bad);font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 14px;border-radius:8px;font-size:14px;z-index:60;max-width:calc(100% - 32px)}
+.loading{color:var(--muted);padding:40px 0;text-align:center}
+@media (prefers-reduced-motion:no-preference){.step,.prow{transition:background-color .15s}}
+</style>
+
+<header class="top"><div class="top-in">
+  <div class="brand"><h1>Conferência de Processos</h1><small>SVLMAT · EEL/USP · Lei 14.133/2021</small></div>
+  <span id="mode" class="mode">Carregando…</span>
+  <button class="btn" data-act="exportar" type="button">Exportar backup</button>
+  <button class="btn" data-act="importar" type="button">Importar backup</button>
+  <input type="file" id="imp-file" accept="application/json,.json" hidden>
+  <button class="btn" data-act="params" type="button">Parâmetros do ano</button>
+  <button class="btn pri" data-act="novo" type="button">+ Novo processo</button>
+</div></header>
+<main id="app"><div class="loading">Carregando processos…</div></main>
+<div id="modal"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+/* ===== Biblioteca de etapas — Conferência de Processos SVLMAT =====
+   Fonte: roteiros SVLMAT v.2025, Lei 14.133/2021, Decreto SP 67.888/2023,
+   Portaria PG 12/2024 (consolidada ago/2025) e relatórios de verificação PG/USP. */
+
+const PARAM_DEFAULT = {
+  ano: 2025,
+  art6xxii: 250902323.87, // art. 6º, XXII (grande vulto) — 2025
+  dlI: 125451.15,         // art. 75, I — 2025
+  dlII: 62725.59,         // art. 75, II — 2025
+  ufesp: 37.02,           // UFESP 2025
+  pd300: 300000           // art. 70, III e art. 75, IV, "c" (valor nominal da lei)
+};
+
+const FASES = [
+  { id: "P", n: "Planejamento da contratação" },
+  { id: "I", n: "Preços, autorização e orçamento" },
+  { id: "M", n: "Minutas e controle de legalidade" },
+  { id: "D", n: "Divulgação" },
+  { id: "S", n: "Sessão, julgamento e habilitação" },
+  { id: "H", n: "Conferência e homologação" },
+  { id: "E", n: "Empenho e formalização" },
+  { id: "X", n: "Execução e pagamento" },
+  { id: "F", n: "Encerramento" }
+];
+
+const brl = v => (Number(v) || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+/* Perguntas que filtram o roteiro */
+const PERGUNTAS = {
+  objeto:      { label: "Objeto", tipo: "sel", ops: [["bens", "Bens"], ["servicos", "Serviços"]], def: "bens" },
+  inciso:      { label: "Hipótese de dispensa por valor", tipo: "sel", ops: [["II", "Art. 75, II — compras e outros serviços"], ["I", "Art. 75, I — obras, engenharia, manutenção de veículos"]], def: "II" },
+  natureza:    { label: "Natureza da obra/serviço", tipo: "sel", ops: [["comum", "Obra ou serviço comum de engenharia"], ["especial", "Obra ou serviço especial de engenharia"]], def: "comum" },
+  regime:      { label: "Regime de execução", tipo: "sel", ops: [["unitario", "Empreitada por preço unitário"], ["global", "Empreitada por preço global"], ["integral", "Empreitada integral"], ["tarefa", "Contratação por tarefa"], ["integrada", "Contratação integrada"], ["semi", "Contratação semi-integrada"], ["fornec", "Fornecimento e prestação de serviço associado"]], def: "global" },
+  categoria:   { label: "Categoria (Portaria GR 3.925/2008)", tipo: "sel", ops: [["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]], def: "D" },
+  contrato:    { label: "Haverá termo de contrato?", ajuda: "Se não, a notificação de fornecimento/nota de empenho substitui o contrato (art. 95).", tipo: "bool", def: false },
+  permanente:  { label: "Material permanente (incorporação patrimonial)?", tipo: "bool", def: false },
+  minutaPadrao:{ label: "Minutas padrão usadas sem alteração além dos campos editáveis?", ajuda: "Inclui o contrato: contrato não padronizado obriga envio à PG (Portaria PG 12/2024, art. 6º).", tipo: "bool", def: true },
+  duvida:      { label: "Há dúvida jurídica sobre a hipótese de contratação?", ajuda: "Dúvida apenas técnica não justifica envio à PG (art. 7º).", tipo: "bool", def: false },
+  irp:         { label: "Haverá IRP com órgãos participantes?", ajuda: "Dispensável quando a EEL for a única contratante (art. 86, §1º).", tipo: "bool", def: false },
+  contrataJa:  { label: "Primeira contratação no mesmo processo da ata?", tipo: "bool", def: true },
+  lei8010:     { label: "Importação para projeto de pesquisa (Lei 8.010/1990)?", tipo: "bool", def: true },
+  esclarec:    { label: "Houve pedido de esclarecimento?", tipo: "bool", def: false },
+  impug:       { label: "Houve pedido de impugnação?", tipo: "bool", def: false },
+  recurso:     { label: "Houve intenção de recurso?", tipo: "bool", def: false }
+};
+
+/* ---------- Etapas ----------
+   f: fase · t: título · r: responsável · b: base legal/normativa
+   v: o que verificar (array ou função(c,m,p)) · w: condição (função(c,m)) · mod: texto-modelo */
+const ETAPAS = {
+  // Planejamento
+  p_sei:   { f: "P", t: "Abertura do processo no SEI — ficha de identificação", r: "Planejamento", b: "Decreto SP 67.641/2023",
+             v: ["Unidade interessada", "Identificação do objeto", "Departamento solicitante", "Identificação do solicitante"] },
+  p_dfd:   { f: "P", t: "Documento de formalização de demanda (DFD — PGC) ou justificativa de não previsão no PCA", r: "Planejamento", b: "Lei 14.133, art. 12, VII; art. 72, I" },
+  p_notif: { f: "P", t: "Notificação de início da fase preparatória à Equipe de Planejamento da Contratação", r: "Planejamento", v: ["Exigida a partir das contratações do PCA 2026"] },
+  p_dem:   { f: "P", t: "Documento de Demanda (Sistema Administrativo USP)", r: "Planejamento" },
+  p_etp:   { f: "P", t: "Estudo Técnico Preliminar (ETP) assinado", r: "Planejamento", b: "Lei 14.133, art. 18, I e §§ 1º a 3º",
+             v: ["Descrição da necessidade", "Estimativa de quantidades", "Estimativa do valor", "Manifestação sobre parcelamento", "Conclusão sobre a adequação da contratação", "Justificativa para itens não obrigatórios omitidos"] },
+  p_arp:   { f: "P", t: "Análise de Risco Preliminar (ARP)", r: "Planejamento", b: "Lei 14.133, art. 18, X" },
+  p_tr:    { f: "P", t: "Termo de Referência preliminar no padrão PG/USP, sem valor referencial", r: "Planejamento", b: "Lei 14.133, art. 18, II; Decreto SP 68.185/2023",
+             v: ["Minuta na versão mais recente publicada pelo DA/PG", "Sem valor referencial ou informação orçamentária"] },
+  p_despdv:{ f: "P", t: "Despacho do Planejamento à DVAdm", r: "Planejamento",
+             v: ["Nº da demanda de compra", "Objeto", "Solicitante (departamento, setor ou docente)", "Prazo para conclusão", "Indicação de que a compra está apta ao atendimento"] },
+
+  // Instrução
+  i_anu:   { f: "I", t: "Despacho de anuência da DVAdm para execução da compra", r: "DVAdm",
+             v: (c, m) => {
+               const h = { pregao: "Caracterização da hipótese legal (pregão — art. 6º, XLI)", srp: "Caracterização da hipótese legal (pregão SRP)", conc: "Caracterização da hipótese legal (concorrência — art. 6º, XXXVIII)",
+                 dlcom: `Enquadramento no art. 75, ${c.inciso}`, dlsem: `Enquadramento no art. 75, ${c.inciso}`, pd: "Enquadramento no art. 75, IV, \"c\" (produto para pesquisa e desenvolvimento)",
+                 inex: "Justificativa técnica de enquadramento no art. 74, caput ou I", imp: "Justificativa técnica de enquadramento no art. 74 (inexigibilidade)", trein: "Justificativa técnica de enquadramento no art. 74, III" }[m.id] || "Caracterização da hipótese legal";
+               const a = [h];
+               if (m.id === "dlsem") a.push("Justificativa para contratação SEM disputa eletrônica, com as vantagens para a Administração (art. 75, §3º: aviso é \"preferencial\")");
+               if (m.id !== "srp" || c.contrataJa) a.push("Indicação orçamentária");
+               a.push("Prazo desejado e prioridade", "Indicação de gestor e fiscais do contrato");
+               return a;
+             } },
+  i_fracio:{ f: "I", t: "Verificação de fracionamento de despesa", r: "SVLMat", b: "Lei 14.133, art. 75, §1º",
+             v: (c, m, p) => [`Somatório do exercício pela unidade gestora, com objetos do mesmo ramo de atividade, abaixo de ${brl(c.inciso === "I" ? p.dlI : p.dlII)}`, "Juntar relatório/extrato que demonstre o somatório"] },
+  i_pesq:  { f: "I", t: "Pesquisa de preços — mínimo de 3 preços", r: "SVLMat", b: "Lei 14.133, art. 23, §1º; Decreto SP 67.888/2023, art. 3º",
+             v: ["Contratações similares da Administração (inclusive USP e compras.gov) em execução ou concluídas há até 1 ano",
+                 "Sites e mídia especializada: página com data e hora de acesso, CNPJ do fornecedor, atualizada até 6 meses antes da divulgação",
+                 "Pesquisa direta: justificativa da escolha dos fornecedores (busca realizada; se CAUFESP, grupo e filtro usados)",
+                 "Pesquisa direta: e-mails enviados a todos, inclusive os que não responderam, com prazo de resposta",
+                 "Orçamentos com descrição, valores unitário e total, CPF/CNPJ, endereço, contato, responsável e data de no máximo 6 meses antes da divulgação",
+                 "Notas fiscais eletrônicas (base nacional/SP) de até 1 ano"] },
+  i_pesqin:{ f: "I", t: "Pesquisa demonstrando que o preço é compatível com o mercado", r: "SVLMat", b: "Lei 14.133, art. 23, §4º; art. 72, VII",
+             v: ["Contratações similares USP/compras.gov de até 1 ano", "Base nacional de notas fiscais e/ou bases do Estado de SP", "Sites com data e hora de acesso e CNPJ",
+                 "Na falta dos anteriores: notas fiscais da futura contratada para outros contratantes, públicos ou privados, de até 1 ano, ou outro meio idôneo"] },
+  i_just:  { f: "I", t: "Justificativa de preços assinada", r: "SVLMat", b: "Decreto SP 67.888/2023, arts. 4º e 7º",
+             v: (c, m) => {
+               const a = ["Descrição do objeto", "Fontes consultadas", "Série de preços coletados", "Método: média, mediana ou menor preço sobre 3 ou mais preços, com justificativa",
+                 "Memória de cálculo", "Justificativa para valores desconsiderados (inexequíveis, inconsistentes ou excessivos)", "Identificação do agente responsável",
+                 "Valores arredondados para 2 casas decimais"];
+               if (m.id === "dlsem") a[3] = "Método (usualmente menor preço, por ser DL sem disputa), com justificativa";
+               if (m.id === "imp") a.push("Justificativa para pagamento em prazo inferior a 28 dias (fechamento de câmbio)");
+               if (m.id === "trein") a.push("Se houver, justificativa para pagamento em prazo inferior a 28 dias");
+               if (m.id === "dlconc") a.splice(2, 1, "Preços colhidos na sessão; justificar se nem todos forem usados");
+               return a;
+             } },
+  i_docc:  { f: "I", t: "Documento de compra — Mercúrio Web (itens previstos)", r: "SVLMat",
+             v: (c, m) => m.id === "imp" ? ["Prazo de pagamento cadastrado em 7 dias (reduzido)", "Conferir no TR se o contrato pode ser dispensado (valor, prazo de entrega, obrigações futuras)"]
+                                         : ["Prazo de pagamento de no mínimo 28 dias; redução para até 7 dias somente com justificativa"] },
+  i_grade: { f: "I", t: "Grade comparativa de pesquisa prévia de preços (Mercúrio Web)", r: "SVLMat" },
+  i_aut:   { f: "I", t: "Autorização de instauração da compra", r: "DIR", b: "Lei 14.133, art. 6º, XLI; art. 72, VIII; Portaria GR 8.321/2024, art. 1º, I",
+             v: (c, m, p) => [`Dirigente da Unidade autoriza até ${brl(p.art6xxii * 0.01)} (1% do art. 6º, XXII); acima disso, o Reitor`,
+                              c.valor > p.art6xxii * 0.01 ? "ATENÇÃO: valor estimado acima da alçada do Dirigente" : "Valor estimado dentro da alçada do Dirigente"] },
+  i_port:  { f: "I", t: "Portaria de designação dos agentes de contratação", r: "DIR", b: "Lei 14.133, art. 7º" },
+  i_dres:  { f: "I", t: "Despacho do SVLMat ao SVFin para reserva orçamentária", r: "SVLMat" },
+  i_res:   { f: "I", t: "Reserva orçamentária", r: "SVFin", b: "Lei 14.133, art. 72, IV; art. 150" },
+  i_dret:  { f: "I", t: "Despacho do SVFin ao SVLMat para conclusão do TR e continuidade", r: "SVFin" },
+
+  // Minutas e legalidade
+  m_tr:    { f: "M", t: "Termo de Referência completo e assinado", r: "SVLMat", b: "Lei 14.133, art. 6º, XXIII" },
+  m_min:   { f: "M", t: "Minuta padrão PG/USP e respectivo parecer referencial", r: "SVLMat",
+             v: ["Versão vigente baixada em da.reitoria.usp.br/modelos-e-instrucoes", "Registrar o número do parecer da PG que aprovou a minuta"] },
+  m_edit:  { f: "M", t: "Minuta de edital preenchida (e minuta de contrato, se houver)", r: "SVLMat" },
+  m_aviso: { f: "M", t: "Minuta de aviso de contratação direta preenchida (e contrato, se houver)", r: "SVLMat" },
+  m_cont:  { f: "M", t: "Minuta de contrato (se houver)", r: "SVLMat", w: c => c.contrato },
+  m_rsem:  { f: "M", t: "Relatório de verificação PG/USP — versão SEM PG, atestado", r: "SVLMat", b: "Portaria PG 12/2024, arts. 1º e 3º",
+             v: ["Usar o modelo da versão vigente no site da PG", "Declaração de que as minutas não foram alteradas além dos campos editáveis", "Indicar as folhas/documentos de cada item"] },
+  m_rcom:  { f: "M", t: "Relatório de verificação PG/USP — versão COM encaminhamento à PG", r: "SVLMat", b: "Portaria PG 12/2024, arts. 6º e 8º",
+             v: ["Trechos alterados da minuta destacados e justificados", "Sem o roteiro preenchido e atestado o processo é devolvido pela PG"] },
+  m_djur:  { f: "M", t: "Despacho à PG/Jurídico para análise", r: "SVLMat", b: "Lei 14.133, art. 53, caput e §4º" },
+  m_mjur:  { f: "M", t: "Manifestação jurídica (parecer da PG)", r: "PG/USP", b: "Lei 14.133, art. 53; art. 72, III" },
+
+  // Divulgação
+  d_edit:  { f: "D", t: "Edital finalizado e assinado pela autoridade competente", r: "SVLMat", b: "Lei 14.133, art. 55",
+             v: (c, m) => {
+               const a = ["Pesquisa de preços ainda vigente (orçamentos com até 6 meses da divulgação)", `Prazo mínimo entre divulgação e propostas: ${prazoEdital(m, c).txt}`,
+                 "Unidades de fornecimento do sistema USP existentes no compras.gov; se não, devolver ao Planejamento"];
+               if (m.id !== "conc" && c.objeto === "bens") a.push("Item acima de R$ 80.000 de bem divisível: cota de até 25% para ME/EPP (LC 123, art. 48, III)");
+               return a;
+             } },
+  d_avis:  { f: "D", t: "Aviso de contratação direta finalizado e assinado", r: "SVLMat", b: "Lei 14.133, art. 75, §3º",
+             v: ["Pesquisa de preços vigente", "Prazo mínimo de 3 dias úteis contados da divulgação do aviso", "Unidades de fornecimento compatíveis com o compras.gov"] },
+  d_jorn:  { f: "D", t: "Pedido de publicação em jornal de grande circulação", r: "SVLMat", v: ["De 1 a 2 dias úteis antes da data desejada", "Modelo da publicação preenchido, uso da ata de registro de preços vigente e data da publicação"] },
+  d_siasg: { f: "D", t: "SIASG — página do aviso de licitação (1 dia antes)", r: "SVLMat" },
+  d_doep:  { f: "D", t: "DOE — página com a publicação pendente (1 dia antes)", r: "SVLMat" },
+  d_cgov:  { f: "D", t: "Compras.gov — configuração da sessão pública e dos itens", r: "SVLMat" },
+  d_pncp:  { f: "D", t: "Publicação no PNCP", r: "SVLMat", b: "Lei 14.133, art. 54",
+             v: (c, m) => ["dlcom", "dlsem", "dlconc"].includes(m.id) ? ["Publicar o ETP junto com o aviso (arquivo ZIP) no compras.gov antes de publicar"] : ["Inteiro teor do edital e anexos"] },
+  d_doe:   { f: "D", t: "DOE — página do aviso já publicado", r: "SVLMat" },
+  d_jpub:  { f: "D", t: "Jornal de grande circulação — página com a publicação destacada", r: "SVLMat" },
+  d_usp:   { f: "D", t: "Publicação no Sistema USP e no portal de contratações USP", r: "SVLMat", v: ["Sistema Administrativo → Edital → Publicação", "portalservicos.usp.br/contratacoes"] },
+
+  // Sessão
+  s_apoio: { f: "S", t: "Convocação da equipe de apoio (e-mail)", r: "SVLMat", v: ["Incluir apoio para análise de documentos contábeis quando houver qualificação econômico-financeira"] },
+  s_escl:  { f: "S", t: "Pedido de esclarecimento e resposta", r: "SVLMat", w: c => c.esclarec, b: "Lei 14.133, art. 164",
+             v: ["E-mail do fornecedor com o pedido", "Resposta: dúvida técnica vai ao requisitante; dúvida do certame, ao agente de contratação", "E-mail de envio da resposta ao fornecedor",
+                 "Cadastro no compras.gov (aba Esclarecimentos), impresso em PDF e juntado", "Cadastro no site da USP (PDF)"] },
+  s_impu:  { f: "S", t: "Pedido de impugnação e decisão", r: "SVLMat", w: c => c.impug, b: "Lei 14.133, art. 164",
+             v: ["E-mail do fornecedor com a impugnação", "Resposta do requisitante e/ou do agente de contratação", "Encaminhamento ao jurídico e manifestação",
+                 "Cadastro no compras.gov (aba Impugnações), impresso em PDF", "Se acolhida: corrigir o edital/aviso e refazer a etapa de divulgação (art. 55, §1º)"] },
+  s_neg:   { f: "S", t: "Negociação de preço antes da aceitação da proposta", r: "SVLMat", b: "Lei 14.133, art. 61" },
+  s_san:   { f: "S", t: "Consulta de impedimentos do primeiro colocado", r: "SVLMat", b: "Lei 14.133, art. 14; Lei 8.429/1992, art. 12",
+             v: ["SICAF", "CEIS", "CNEP", "CNCIAI (empresa e sócio majoritário)", "e-Sanções", "CEEP", "Apenados (TCESP)"] },
+  s_prop:  { f: "S", t: "Proposta da empresa vencedora", r: "SVLMat",
+             v: (c, m, p) => ["Identificação da empresa e do responsável", `Conta bancária; se não for do Banco do Brasil e o valor passar de 100 UFESPs (${brl(100 * p.ufesp)}), documento justificando a exceção`,
+                              "Descrição dos itens", "Prazos de entrega e pagamento conforme edital/TR", "Concordância com a Resolução USP 8.548/2023", "Validade vigente"] },
+  s_acei:  { f: "S", t: "E-mail de aceite técnico do requisitante", r: "SVLMat" },
+  s_hab:   { f: "S", t: "Habilitação da empresa vencedora", r: "SVLMat", b: "Lei 14.133, arts. 62 a 70",
+             v: (c, m, p) => {
+               const a = ["Habilitação jurídica", "Habilitação fiscal, social e trabalhista", "Qualificação econômico-financeira (se exigida no TR)", "Qualificação técnica (se exigida no TR)", "Documentos substituíveis pelo SICAF (art. 70, II)"];
+               if (m.tipo === "direta") a.unshift("Se o TR simplificou a habilitação (Decreto SP 68.304/2024, art. 18): Dívida Ativa do domicílio, CNDT, CND Federal e CRF-FGTS");
+               if (m.tipo === "direta" && c.valor && c.valor < p.dlII / 4) a.push(`Valor abaixo de ${brl(p.dlII / 4)} (1/4 do limite de compras): habilitação pode ser dispensada total ou parcialmente (art. 70, III)`);
+               if (m.id === "pd" && c.valor && c.valor <= p.pd300) a.push(`Produto para P&D até ${brl(p.pd300)}: habilitação pode ser dispensada (art. 70, III)`);
+               return a;
+             } },
+  s_decl:  { f: "S", t: "Relatório de declarações — compras.gov", r: "SVLMat" },
+  s_rec:   { f: "S", t: "Recurso: razões, contrarrazões e decisão", r: "SVLMat", w: c => c.recurso, b: "Lei 14.133, art. 165",
+             v: ["Intenção de recurso registrada tempestivamente na sessão", "Razões e contrarrazões", "Análise do requisitante e/ou do agente de contratação", "Encaminhamento ao jurídico e manifestação",
+                 "Resposta cadastrada no compras.gov (aba Recursos), impressa em PDF", "Se provido: retomar a sessão pública"] },
+  s_julg:  { f: "S", t: "Termo de julgamento — compras.gov", r: "SVLMat", b: "Lei 14.133, art. 17, IV a VI" },
+  s_rdisp: { f: "S", t: "Relatório da dispensa — compras.gov", r: "SVLMat" },
+  s_datas: { f: "S", t: "Datas cadastradas no documento de compra", r: "SVLMat", v: ["Publicação no DOE", "Abertura de propostas", "Julgamento de propostas", "Abertura de habilitação"] },
+  s_gprop: { f: "S", t: "Grade de propostas dos fornecedores", r: "SVLMat" },
+  s_docef: { f: "S", t: "Documento da compra — itens efetivados", r: "SVLMat" },
+
+  // Conferência e homologação
+  h_dfin:  { f: "H", t: "Despacho ao SVFin para conferência", r: "SVLMat" },
+  h_rfin:  { f: "H", t: "Relatório de verificação do SVFin", r: "SVFin" },
+  h_dret:  { f: "H", t: "Despacho do SVFin: regularidade ou recomendação de ajustes", r: "SVFin" },
+  h_aten:  { f: "H", t: "Declaração de atendimento às recomendações (se houver apontamentos)", r: "SVLMat" },
+  h_adj:   { f: "H", t: "Adjudicação do objeto", r: "DIR", b: "Lei 14.133, art. 71, IV; Portaria GR 8.321/2024" },
+  h_hom:   { f: "H", t: "Termo de homologação assinado", r: "DIR", b: "Lei 14.133, art. 71, IV" },
+  h_aut:   { f: "H", t: "Ato de autorização da contratação direta (termo de homologação) assinado", r: "DIR", b: "Lei 14.133, art. 72, VIII" },
+  h_hpncp: { f: "H", t: "Homologação publicada no PNCP", r: "DIR" },
+  h_apncp: { f: "H", t: "Ato que autoriza a contratação direta divulgado no PNCP", r: "DIR", b: "Lei 14.133, art. 72, parágrafo único" },
+
+  // Empenho e formalização
+  e_danu:  { f: "E", t: "Despacho ao SVFin para anulação do saldo de reserva e empenho", r: "SVLMat" },
+  e_anu:   { f: "E", t: "Anulação do saldo da reserva (se houver)", r: "SVFin" },
+  e_demp:  { f: "E", t: "Despacho ao SVFin para empenho", r: "SVLMat" },
+  e_emp:   { f: "E", t: "Nota de empenho", r: "SVFin", v: ["Regularidade dos documentos de habilitação", "Consulta ao CADIN Estadual", "Débito no Sistema Hermes, se for o caso"] },
+  e_dcon:  { f: "E", t: "Despacho à equipe de Contratos", r: "SVFin" },
+  e_cont:  { f: "E", t: "Contrato assinado", r: "Contratos", w: c => c.contrato, b: "Lei 14.133, art. 92" },
+  e_notf:  { f: "E", t: "Notificação de fornecimento", r: "Contratos", w: c => !c.contrato, b: "Lei 14.133, art. 95" },
+  e_port:  { f: "E", t: "Portaria de designação de gestor e fiscais do contrato", r: "Contratos", b: "Lei 14.133, art. 117" },
+  e_pncp:  { f: "E", t: "Contrato (ou instrumento substitutivo) publicado no PNCP", r: "Contratos", b: "Lei 14.133, art. 94",
+             v: (c, m) => [`Prazo: ${m.tipo === "lic" ? "20" : "10"} dias úteis contados da assinatura (condição de eficácia)`] },
+  e_obq:   { f: "E", t: "Quantitativos e preços unitários e totais contratados divulgados", r: "Contratos", b: "Lei 14.133, art. 94, §3º", v: ["Em até 25 dias úteis após a assinatura do contrato"] },
+
+  // Execução
+  x_nf:    { f: "X", t: "Nota fiscal", r: "Contratos" },
+  x_ates:  { f: "X", t: "Atestado de recebimento", r: "Fiscal", b: "Lei 14.133, art. 140" },
+  x_rec:   { f: "X", t: "Termo de recebimento", r: "Contratos", b: "Lei 14.133, art. 140" },
+  x_dliq:  { f: "X", t: "Despacho ao SVFin para liquidação da despesa", r: "Contratos" },
+  x_liq:   { f: "X", t: "Liquidação da despesa", r: "SVFin", v: ["Consulta ao CADIN Estadual"] },
+  x_iss:   { f: "X", t: "Retenção de ISS", r: "SVFin", w: c => c.objeto === "servicos" },
+  x_inss:  { f: "X", t: "INSS — registro na EFD-Reinf", r: "SVFin", w: c => c.objeto === "servicos" },
+  x_pat:   { f: "X", t: "Incorporação do bem ao patrimônio", r: "SVLMat — Patrimônio", w: c => c.permanente },
+  x_pag:   { f: "X", t: "Nota de pagamento", r: "SVFin" },
+  x_obe:   { f: "X", t: "Quantitativos executados e preços praticados divulgados", r: "Contratos", b: "Lei 14.133, art. 94, §3º", v: ["Em até 45 dias úteis após a conclusão do contrato"] },
+  x_drel:  { f: "X", t: "Despacho a Contratos para o relatório final no PNCP", r: "SVFin" },
+  x_rel:   { f: "X", t: "Relatório final no PNCP", r: "Contratos" },
+  f_enc:   { f: "F", t: "Termo de encerramento", r: "SVFin" },
+
+  // Registro de preços
+  a_irp:   { f: "P", t: "Intenção de Registro de Preços (IRP) no compras.gov", r: "Planejamento", b: "Lei 14.133, art. 86", w: c => c.irp,
+             v: ["Prazo mínimo de 8 dias úteis para adesão de participantes", "Consolidar as quantidades dos participantes no TR", "Tutorial do DA: \"Criar IRP no Compras.gov\""] },
+  a_conv:  { f: "H", t: "Convocação do fornecedor para assinatura da ata", r: "SVLMat" },
+  a_ata:   { f: "H", t: "Ata de registro de preços assinada", r: "DIR / fornecedor", b: "Lei 14.133, art. 82, VII; art. 84",
+             v: ["Modelo de ata PG/USP vigente", "Cadastro de reserva com licitantes que aceitarem o preço do vencedor", "Vigência de 1 ano, prorrogável por igual período se o preço continuar vantajoso"] },
+  a_pub:   { f: "H", t: "Ata publicada (PNCP e DOE)", r: "SVLMat", v: ["A vigência da ata conta da publicação", "Registrar a data final de vigência para controle de consumo"] },
+
+  // Consumo de ata
+  c_info:  { f: "P", t: "Informação de abertura do processo de consumo da ata", r: "SVLMat",
+             mod: "O presente processo trata do consumo da Ata de Registro de Preços nº XX/2026 – EEL/USP, decorrente do Pregão Eletrônico nº XX/2026 – EEL/USP, cujo objeto consiste no registro de preços para eventual contratação de Serviço de XXXXXXXX.\n\nA presente contratação objetiva atender às demandas da Escola de Engenharia de Lorena da Universidade de São Paulo – EEL/USP, mediante utilização da referida Ata de Registro de Preços, observadas as especificações e demais condições estabelecidas no Termo de Referência, no Edital, na proposta comercial e na própria Ata.\n\nDiante do exposto, encaminha-se o presente processo para prosseguimento das providências necessárias à contratação." },
+  c_ata:   { f: "P", t: "Ata de registro de preços juntada", r: "SVLMat" },
+  c_pub:   { f: "P", t: "Publicação da ata juntada (vigência)", r: "SVLMat", b: "Lei 14.133, art. 84", v: ["Ata vigente na data da contratação (vigência conta da publicação)"] },
+  c_sald:  { f: "P", t: "Controle de saldo da ata", r: "SVLMat", v: ["Quantidade já consumida + quantidade pedida ≤ quantidade registrada para a EEL"] },
+  c_mail:  { f: "P", t: "Pedido do solicitante (chefia do setor) para consumo da ata", r: "SVLMat" },
+  c_docc:  { f: "I", t: "Documento de compra — Mercúrio Web (CompraWeb-RP → Gerenciar Registro de Preço)", r: "SVLMat", v: ["Juntar a tela impressa em PDF (não há documento padrão)"] },
+  c_pesq:  { f: "I", t: "Pesquisa de preços (manutenção da vantajosidade dos preços registrados)", r: "SVLMat", b: "Lei 14.133, art. 82, §5º, IV" },
+  c_prop:  { f: "I", t: "Proposta do fornecedor registrado", r: "SVLMat" },
+  c_hab:   { f: "I", t: "Documentos de habilitação e regularidade", r: "SVLMat",
+             v: ["CND de tributos federais e Dívida Ativa da União (RFB/PGFN)", "CRF-FGTS", "CADIN Estadual", "e-Sanções (BEC-SP)", "Impedimentos de licitar (TCE-SP)", "CEIS", "CNDT", "CEEP",
+                 "CNCIAI (CNJ)", "Situação do fornecedor no SICAF", "SICAF nível V — qualificação técnica", "SICAF — ocorrências impeditivas de licitar", "SICAF — ocorrências ativas",
+                 "SICAF — prováveis ocorrências impeditivas indiretas", "Dívida Ativa do Estado de SP (PGE-SP)"] },
+  c_aut:   { f: "I", t: "Autorização de instauração da compra", r: "DIR", b: "Portaria GR 8.321/2024" },
+  c_dfin:  { f: "I", t: "Despacho ao SVFin para reserva e empenho", r: "SVLMat",
+             mod: "Ao Serviço Técnico de Finanças - SVFIN\n\nA Ata de Registro de Preços encontra-se devidamente publicada e vigente no âmbito da Escola de Engenharia de Lorena da USP e a compra encontra-se devidamente autorizada pela autoridade competente, conforme documentação juntada aos autos.\n\nSegue ao Serviço Técnico de Finanças – SVFIN-88 para providências quanto à reserva orçamentária e empenhamento.\n\nApós, devolver a este SVLMAT para continuidade dos trabalhos de notificação de fornecimento." },
+  c_dcon:  { f: "E", t: "Despacho à Gestão de Contratos", r: "SVFin", mod: "À Gestão de Contratos,\n\nEncaminhe-se para Notificação de Fornecimento e ações decorrentes." },
+  c_mailn: { f: "E", t: "E-mail de envio da notificação de fornecimento", r: "Gestão de Contratos" },
+
+  // Obras
+  o_nat:   { f: "P", t: "Documento técnico: obra, serviço comum ou serviço especial de engenharia", r: "Equipe técnica", b: "Lei 14.133, art. 6º, XII, XXI" },
+  o_reg:   { f: "P", t: "Documento técnico: regime de execução", r: "Equipe técnica", b: "Lei 14.133, art. 46" },
+  o_cat:   { f: "P", t: "Classificação do empreendimento (Portaria GR 3.925/2008, categorias A a D)", r: "Equipe técnica" },
+  o_sef:   { f: "P", t: "Termo de Compromisso assinado pela SEF autorizando a intervenção", r: "SEF", w: c => c.categoria !== "D" },
+  o_pb:    { f: "P", t: "Projeto básico", r: "Equipe técnica", b: "Lei 14.133, art. 6º, XXV" },
+  o_pe:    { f: "P", t: "Projeto executivo, ou previsão de que será desenvolvido junto com a execução", r: "Equipe técnica", b: "Lei 14.133, art. 46, §1º" },
+  o_os:    { f: "P", t: "Orçamentos sintéticos por edificação, etapa, parcela ou trecho", r: "Equipe técnica" },
+  o_oa:    { f: "P", t: "Orçamento analítico com composições de custo unitário", r: "Equipe técnica", b: "Lei 14.133, art. 23, §2º", v: ["Custos ≤ mediana do SINAPI/SICRO", "BDI de referência e encargos sociais"] },
+  o_enc:   { f: "P", t: "Demonstrativo analítico de encargos sociais (horista e mensalista)", r: "Equipe técnica" },
+  o_prof:  { f: "P", t: "Peças técnicas assinadas por profissional identificado", r: "Equipe técnica" },
+  o_art:   { f: "P", t: "ART, RRT ou TRT das peças técnicas e planilhas", r: "Equipe técnica" },
+  o_cipi:  { f: "I", t: "ID-CIPI gerado no Obras.gov", r: "SVLMat" },
+
+  // Inexigibilidade, importação, treinamentos, P&D
+  n_excl:  { f: "P", t: "Comprovação da inviabilidade de competição", r: "Planejamento", b: "Lei 14.133, art. 74, I e §1º", v: ["Atestado, contrato, declaração de exclusividade ou outro documento idôneo"] },
+  n_raz:   { f: "I", t: "Razão da escolha do contratado", r: "SVLMat", b: "Lei 14.133, art. 72, VI" },
+  im_prof: { f: "P", t: "Proforma invoice vigente, com nome da mercadoria traduzido", r: "Planejamento" },
+  im_ofi:  { f: "P", t: "Ofício do pesquisador com \"de acordo\" do Dirigente", r: "Planejamento",
+             v: ["Nome do pesquisador responsável pela importação", "Fonte de recursos", "Endereço de entrega da Unidade interessada", "Se o material é perecível, radioativo e/ou perigoso"] },
+  im_8010: { f: "P", t: "Dados para licenciamento de importação (Lei 8.010/1990)", r: "Planejamento", w: c => c.lei8010,
+             v: ["Título do projeto", "Coordenador", "Órgão de fomento", "Nº do projeto/convênio", "Laboratório/departamento da USP onde o material será usado", "Cópia da aprovação (termo de outorga, convênio)"] },
+  im_prov: { f: "S", t: "Proforma invoice vigente na data da contratação", r: "SVLMat" },
+  im_pncp: { f: "E", t: "Empenho/contrato publicado no PNCP", r: "SVFin", b: "Lei 14.133, art. 94, II", v: ["10 dias úteis contados da emissão do empenho ou da assinatura"] },
+  im_dac:  { f: "E", t: "Despacho ao DACIE/RUSP para providências de importação", r: "SVFin", v: ["Usar o texto padrão do SEI, referenciando os documentos exigidos pelo DACIE"] },
+  im_docs: { f: "X", t: "Documentação de importação (DACIE)", r: "DACIE" },
+  im_dliq: { f: "X", t: "Despacho ao SVFin para liquidação", r: "DACIE" },
+  t_prop:  { f: "P", t: "Proposta com cronograma e ementa do curso", r: "Planejamento" },
+  t_not:   { f: "P", t: "Comprovação de notória especialização", r: "Planejamento", b: "Lei 14.133, art. 74, III e §3º",
+             v: ["Desempenho anterior, estudos, experiência, publicações, organização, aparelhamento ou equipe técnica"] },
+  t_comp:  { f: "P", t: "Termo de compromisso assinado pelos participantes", r: "Planejamento" },
+  pd_proj: { f: "P", t: "Vinculação do produto a atividade de pesquisa e desenvolvimento", r: "Planejamento", b: "Lei 14.133, art. 6º, LV; art. 75, IV, \"c\"",
+             v: ["Declaração do pesquisador sobre o uso em P&D", "Projeto/linha de pesquisa e laboratório", "Se obra ou serviço de engenharia: limite do art. 75, IV, \"c\" e regulamento específico (§5º)"] },
+  pd_tr:   { f: "M", t: "TR e minuta de contrato padrão PG para produto de pesquisa", r: "SVLMat", v: ["Modelos da PG (V 01.2024) e parecer P 5117/2024"] },
+
+  // Concomitante
+  k_dvad:  { f: "I", t: "Despacho da DVAdm com informações completas para o atendimento", r: "DVAdm",
+             v: ["Hipótese legal", "Informação sobre a pesquisa de preços concomitante", "Recurso orçamentário", "Necessidade de contrato", "Prazo de atendimento", "Gestor e fiscais"] },
+  k_aut:   { f: "I", t: "Autorização de instauração (compra aberta no Sistema USP)", r: "DIR / SVLMat", b: "Portaria GR 8.321/2024", v: ["O documento de instauração é gerado após assinatura da autoridade"] },
+  k_info:  { f: "I", t: "Informação: hipótese legal, pesquisa concomitante e despacho para reserva", r: "SVLMat",
+             v: ["Indicar a norma ou orientação que ampara a pesquisa concomitante (tutorial DA \"Dispensa CONCOMITANTE\")", "A reserva é feita sobre valor estimado: ajustar após a sessão"] },
+  k_docc:  { f: "I", t: "Documento de compra encaminhado no Sistema USP", r: "SVFin" },
+  k_pesq:  { f: "S", t: "Pesquisa de preços derivada da sessão pública", r: "SVLMat", v: ["Tela da sessão com CNPJ e melhor preço de cada participante", "Lançar 3 orçamentos no Sistema USP"] },
+
+  // Passagens
+  pa_ab:   { f: "P", t: "Informação de abertura da solicitação de viagem", r: "Chefe da Divisão" },
+  pa_form: { f: "P", t: "Formulário de solicitação de passagem assinado pela autoridade", r: "Chefe da Divisão" },
+  pa_just: { f: "P", t: "Justificativa técnica da viagem", r: "Chefe da Divisão" },
+  pa_conv: { f: "P", t: "Aceite, convite, inscrição ou documento da instituição visitada", r: "Chefe da Divisão" },
+  pa_desp: { f: "P", t: "Despacho ao SVLMAT para emissão", r: "Chefe da Divisão" },
+  pa_sald: { f: "I", t: "Saldo do contrato/empenho com a agência", r: "SVLMat", v: ["Conferir se o empenho estimativo comporta a emissão"] },
+  pa_cons: { f: "I", t: "Consulta de disponibilidade no sistema da agência (captura de tela)", r: "Comprador/SVLMat" },
+  pa_cia:  { f: "I", t: "Pesquisa no site da companhia aérea (captura de tela)", r: "Comprador/SVLMat" },
+  pa_neg:  { f: "I", t: "Negociação do valor com a agência (e-mails completos)", r: "Comprador/SVLMat", v: ["Pedido de ajuste", "Resposta da agência com o valor a considerar"] },
+  pa_inf:  { f: "I", t: "Informação — pesquisa de preços e ajuste do valor", r: "Comprador/SVLMat",
+             mod: "INFORMAÇÃO\n\nEm atendimento ao despacho constante dos autos, procedeu-se à pesquisa para emissão de passagem aérea destinada ao(à) passageiro(a) [NOME DO PASSAGEIRO], para o trecho [ORIGEM – DESTINO – ORIGEM], com embarque previsto para [DATA] e retorno em [DATA], conforme condições estabelecidas no formulário de solicitação de passagem.\n\nInicialmente, foi realizada consulta de disponibilidade no sistema da agência MedTour Turismo, cuja evidência encontra-se juntada aos autos.\n\nPara fins de verificação do valor apresentado, realizou-se também consulta diretamente no site da companhia aérea [NOME DA COMPANHIA], para voo em condições compatíveis com o itinerário solicitado, conforme evidência anexada ao processo.\n\nConsiderando a diferença identificada entre o valor apresentado pela agência e o valor verificado diretamente no site da companhia aérea, foi solicitado à MedTour Turismo o ajuste/adequação do valor, conforme correspondência eletrônica juntada aos autos.\n\nEm resposta, a agência informou que, para a emissão pretendida, deverá ser considerado o valor de R$ [VALOR] ([VALOR POR EXTENSO]), conforme manifestação constante dos autos.\n\nDessa forma, registra-se que o valor considerado para a emissão da passagem é de R$ [VALOR], nas condições e itinerário apresentados na documentação que instrui o presente processo.\n\nEncaminham-se os autos ao SVFIN para análise e, estando de acordo, autorização para prosseguimento da emissão." },
+  pa_apr:  { f: "H", t: "Aprovação da emissão após conferência da instrução", r: "Chefia Financeira" },
+  pa_emi:  { f: "E", t: "Emissão do bilhete", r: "Agência/SVLMat" },
+  pa_bil:  { f: "E", t: "Bilhete (e-ticket) juntado", r: "Comprador/SVLMat" },
+  pa_conf: { f: "E", t: "E-mail ao solicitante para conferência dos dados e confirmação", r: "Comprador/SVLMat" },
+  pa_fat:  { f: "X", t: "Fatura quinzenal correspondente à emissão", r: "Agência" },
+  pa_real: { f: "X", t: "E-mail do solicitante confirmando a realização da viagem", r: "Comprador/SVLMat" },
+  pa_emb:  { f: "X", t: "Bilhetes/cartões de embarque utilizados", r: "Comprador/SVLMat" },
+  pa_rel:  { f: "X", t: "Relatório sucinto da viagem (prestação de contas)", r: "Comprador/SVLMat" },
+  pa_enc:  { f: "F", t: "Informação de encerramento e arquivamento", r: "Comprador/SVLMat",
+             mod: "INFORMAÇÃO\n\nTrata o presente processo da emissão de passagem aérea destinada ao(à) passageiro(a) [NOME DO PASSAGEIRO], para deslocamento a [DESTINO], no período de [DATA DE IDA] a [DATA DE RETORNO], com a finalidade de [FINALIDADE DA VIAGEM].\n\nApós a autorização constante dos autos, foi realizada a emissão do respectivo bilhete aéreo, posteriormente encaminhado ao solicitante para conferência dos dados.\n\nConcluída a viagem, o solicitante encaminhou a documentação comprobatória pertinente, que foi juntada aos autos, compreendendo:\n\ne-mail de confirmação da realização da viagem;\nbilhetes/cartões de embarque utilizados; e\nrelatório sucinto da viagem para prestação de contas.\n\nConsiderando a conclusão das providências relativas à emissão da passagem e a apresentação da documentação comprobatória da realização da viagem, não restam providências a serem adotadas pelo SVLMAT no âmbito deste processo.\n\nRegistra-se que os procedimentos relativos ao faturamento e ao pagamento da passagem são tratados em processo administrativo específico.\n\nDessa forma, considera-se concluída a instrução do presente processo, procedendo-se ao seu encerramento/arquivamento." }
+};
+
+/* Blocos reutilizáveis */
+const PLAN = ["p_sei", "p_dfd", "p_notif", "p_dem", "p_etp", "p_arp"];
+const PRECO = ["i_pesq", "i_just", "i_docc", "i_grade"];
+const ORC = ["i_dres", "i_res", "i_dret"];
+const PG = ["$PG"]; // expandido conforme a rota (sem PG / com PG)
+const PUB_LIC = ["d_edit", "d_jorn", "d_siasg", "d_doep", "d_cgov", "d_pncp", "d_doe", "d_jpub", "d_usp"];
+const SESSAO_LIC = ["s_apoio", "s_escl", "s_impu", "s_neg", "s_san", "s_prop", "s_acei", "s_hab", "s_decl", "s_rec", "s_julg", "s_datas", "s_gprop", "s_docef"];
+const CONF = ["h_dfin", "h_rfin", "h_dret", "h_aten"];
+const FORMAL = ["e_dcon", "e_cont", "e_notf", "e_port", "e_pncp"];
+const EXEC = ["x_nf", "x_ates", "x_rec", "x_dliq", "x_liq", "x_iss", "x_inss", "x_pat", "x_pag", "x_drel", "x_rel", "f_enc"];
+
+const COMUNS_LIC = ["objeto", "valor", "contrato", "permanente", "minutaPadrao", "esclarec", "impug", "recurso"];
+const COMUNS_DIR = ["objeto", "valor", "contrato", "permanente", "minutaPadrao", "duvida"];
+
+const MODALIDADES = [
+  { id: "pregao", grupo: "Licitação", nome: "Pregão eletrônico", tipo: "lic", desc: "Bens e serviços comuns, inclusive serviços comuns de engenharia.",
+    perg: COMUNS_LIC,
+    seq: [...PLAN, "p_tr", "p_despdv", "i_anu", ...PRECO, "i_aut", "i_port", ...ORC, "m_tr", "m_min", "m_edit", ...PG, ...PUB_LIC, ...SESSAO_LIC, ...CONF, "h_adj", "h_hom", "h_hpncp", "e_danu", "e_anu", "e_emp", ...FORMAL, ...EXEC] },
+  { id: "srp", grupo: "Licitação", nome: "Pregão — Registro de Preços (Ata)", tipo: "lic", desc: "Pregão para registro de preços, com IRP, ata e primeira contratação opcional.",
+    perg: ["objeto", "valor", "irp", "contrataJa", "contrato", "permanente", "minutaPadrao", "esclarec", "impug", "recurso"],
+    seq: [...PLAN, "a_irp", "p_tr", "p_despdv", "i_anu", ...PRECO, "i_aut", "i_port", "m_tr", "m_min", "m_edit", ...PG, ...PUB_LIC, ...SESSAO_LIC, ...CONF, "h_adj", "h_hom", "h_hpncp", "a_conv", "a_ata", "a_pub",
+          "$JA:i_dres", "$JA:i_res", "$JA:e_demp", "$JA:e_emp", ...FORMAL.map(s => "$JA:" + s), ...EXEC.map(s => "$JA:" + s)] },
+  { id: "conc", grupo: "Licitação", nome: "Concorrência — obras e serviços de engenharia", tipo: "lic", desc: "Obras e serviços especiais de engenharia (ou comuns, quando não couber pregão).",
+    perg: ["natureza", "regime", "categoria", "valor", "contrato", "minutaPadrao", "esclarec", "impug", "recurso"], fixo: { objeto: "servicos", contrato: true },
+    seq: [...PLAN, "o_nat", "o_reg", "o_cat", "o_sef", "o_pb", "o_pe", "o_os", "o_oa", "o_enc", "o_prof", "o_art", "p_tr", "p_despdv", "i_anu", ...PRECO, "i_aut", "i_port", "o_cipi", ...ORC,
+          "m_tr", "m_min", "m_edit", ...PG, ...PUB_LIC, ...SESSAO_LIC, ...CONF, "h_adj", "h_hom", "h_hpncp", "e_danu", "e_anu", "e_emp", ...FORMAL, "e_obq", "x_nf", "x_ates", "x_rec", "x_dliq", "x_liq", "x_iss", "x_inss", "x_pag", "x_obe", "x_drel", "x_rel", "f_enc"] },
+  { id: "dlcom", grupo: "Contratação direta", nome: "Dispensa por valor — com disputa", tipo: "direta", desc: "Art. 75, I ou II, com aviso de 3 dias úteis e disputa eletrônica.",
+    perg: ["inciso", ...COMUNS_DIR, "esclarec", "impug", "recurso"],
+    seq: [...PLAN, "p_tr", "p_despdv", "i_anu", "i_fracio", ...PRECO, "i_aut", "i_port", ...ORC, "m_tr", "m_aviso", ...PG, "d_avis", "d_pncp", "d_cgov",
+          "s_apoio", "s_escl", "s_impu", "s_neg", "s_san", "s_prop", "s_acei", "s_hab", "s_decl", "s_rec", "s_gprop", "s_docef", ...CONF, "h_aut", "h_apncp", "s_rdisp", "e_demp", "e_emp", ...FORMAL, ...EXEC] },
+  { id: "dlsem", grupo: "Contratação direta", nome: "Dispensa por valor — sem disputa", tipo: "direta", desc: "Art. 75, I ou II, sem disputa eletrônica (exige justificativa).",
+    perg: ["inciso", ...COMUNS_DIR],
+    seq: [...PLAN, "p_tr", "p_despdv", "i_anu", "i_fracio", ...PRECO, "i_aut", "i_port", ...ORC, "m_tr", "m_min", ...PG, "d_pncp", "s_san", "s_prop", "s_acei", "s_hab", ...CONF, "h_aut", "h_apncp",
+          "s_gprop", "s_docef", "e_demp", "e_emp", ...FORMAL, ...EXEC] },
+  { id: "dlconc", grupo: "Contratação direta", nome: "Dispensa com pesquisa concomitante", tipo: "direta", desc: "Dispensa por valor em que a pesquisa de preços sai da própria sessão.",
+    perg: ["inciso", ...COMUNS_DIR, "esclarec", "impug", "recurso"],
+    seq: [...PLAN, "p_tr", "p_despdv", "k_dvad", "i_fracio", "k_aut", "i_port", "k_info", "i_res", "k_docc", "i_dret", "m_cont", ...PG, "d_avis", "d_pncp", "d_cgov",
+          "s_apoio", "s_escl", "s_impu", "s_neg", "k_pesq", "i_grade", "i_just", "s_san", "s_prop", "s_acei", "s_hab", "s_decl", "s_rec", ...CONF, "h_aut", "h_apncp", "s_rdisp", "s_gprop", "s_docef",
+          "e_demp", "e_emp", ...FORMAL, ...EXEC] },
+  { id: "pd", grupo: "Contratação direta", nome: "Dispensa — produto para pesquisa (art. 75, IV, \"c\")", tipo: "direta", desc: "Bens e insumos para P&D; roteiro próprio da PG.",
+    perg: COMUNS_DIR,
+    seq: [...PLAN, "pd_proj", "p_tr", "p_despdv", "i_anu", ...PRECO, "i_aut", "i_port", ...ORC, "m_tr", "pd_tr", "s_san", "s_prop", "s_hab", "n_raz", ...PG, ...CONF, "h_aut", "h_apncp",
+          "s_gprop", "s_docef", "e_demp", "e_emp", ...FORMAL, ...EXEC] },
+  { id: "inex", grupo: "Contratação direta", nome: "Inexigibilidade — fornecedor exclusivo", tipo: "direta", desc: "Art. 74, caput e I — fornecimento nacional.",
+    perg: COMUNS_DIR,
+    seq: [...PLAN, "n_excl", "p_tr", "p_despdv", "i_anu", "i_pesqin", "i_just", "i_docc", "i_grade", "i_aut", "i_port", ...ORC, "m_tr", "m_min", "m_cont", "s_prop", "s_san", "s_hab", "n_raz",
+          "s_gprop", "s_docef", ...PG, ...CONF, "h_aut", "h_apncp", "e_demp", "e_emp", ...FORMAL, ...EXEC] },
+  { id: "imp", grupo: "Contratação direta", nome: "Inexigibilidade — importação", tipo: "direta", desc: "Importação de fornecedor exclusivo, com DACIE/RUSP.",
+    perg: ["valor", "lei8010", "contrato", "permanente", "minutaPadrao", "duvida"], fixo: { objeto: "bens" },
+    seq: [...PLAN, "im_prof", "n_excl", "im_ofi", "im_8010", "p_tr", "p_despdv", "i_anu", "i_pesqin", "i_just", "i_docc", "i_grade", "i_aut", "i_port", ...ORC, "m_tr", "m_min", "m_cont",
+          "im_prov", "s_san", "s_hab", "n_raz", "s_gprop", "s_docef", ...PG, ...CONF, "h_aut", "h_apncp", "e_demp", "e_emp", "im_pncp", "im_dac", "im_docs", "im_dliq", "x_liq", "x_pat", "x_pag", "f_enc"] },
+  { id: "trein", grupo: "Contratação direta", nome: "Inexigibilidade — treinamentos", tipo: "direta", desc: "Art. 74, III — serviço técnico com notória especialização.",
+    perg: ["valor", "contrato", "minutaPadrao", "duvida"], fixo: { objeto: "servicos" },
+    seq: [...PLAN, "t_prop", "t_not", "t_comp", "p_tr", "p_despdv", "i_anu", "i_pesqin", "i_just", "i_docc", "i_grade", "i_aut", "i_port", ...ORC, "m_tr", "m_min", "m_cont", "s_prop", "s_san", "s_hab", "n_raz",
+          "s_gprop", "s_docef", ...PG, ...CONF, "h_aut", "h_apncp", "e_demp", "e_emp", ...FORMAL, ...EXEC] },
+  { id: "consumo", grupo: "Outros", nome: "Consumo de ata de registro de preços", tipo: "outro", desc: "Contratação a partir de ata vigente da EEL.",
+    perg: ["objeto", "valor", "contrato", "permanente"],
+    seq: ["c_info", "c_ata", "c_pub", "c_sald", "c_mail", "c_docc", "c_pesq", "c_prop", "c_hab", "c_aut", "c_dfin", "i_res", "e_emp", "c_dcon", "e_cont", "e_notf", "c_mailn", "e_port", "e_pncp", ...EXEC] },
+  { id: "passagem", grupo: "Outros", nome: "Passagens aéreas", tipo: "outro", desc: "Emissão pela agência contratada, com pesquisa no site da companhia.",
+    perg: [],
+    seq: ["pa_ab", "pa_form", "pa_just", "pa_conv", "pa_desp", "pa_sald", "pa_cons", "pa_cia", "pa_neg", "pa_inf", "pa_apr", "pa_emi", "pa_bil", "pa_conf", "pa_fat", "pa_real", "pa_emb", "pa_rel", "pa_enc"] }
+];
+const MOD = Object.fromEntries(MODALIDADES.map(m => [m.id, m]));
+
+/* Rota na Procuradoria Geral — Portaria PG 12/2024 (consolidada ago/2025) */
+function rotaPG(m, c, p) {
+  if (m.tipo === "outro") return { rota: "na", motivo: "Fluxo sem análise jurídica prévia prevista nos roteiros." };
+  if (!c.minutaPadrao) return { rota: "com", motivo: "Minuta alterada ou contrato não padronizado: envio obrigatório à PG (art. 6º)." };
+  if (m.tipo === "lic") return { rota: "sem", motivo: "Edital com minuta padrão pré-aprovada: dispensa de trâmite (art. 1º)." };
+  if (c.duvida) return { rota: "com", motivo: "Dúvida jurídica sobre a contratação: remeter à PG (art. 3º, exceção; art. 7º)." };
+  const v = Number(c.valor) || 0;
+  if (["dlcom", "dlsem", "dlconc"].includes(m.id)) return { rota: "sem", motivo: "Dispensa por valor com aviso padrão: dispensa de trâmite (art. 3º)." };
+  if (m.id === "pd") {
+    const lim = p.art6xxii * 0.005;
+    return v && v > lim ? { rota: "com", motivo: `Valor acima de ${brl(lim)} (0,5% do art. 6º, XXII): envio à PG (art. 3º, §1º-A).` }
+                        : { rota: "sem", motivo: `Produto para pesquisa até ${brl(lim)}: dispensa de trâmite (art. 3º, §1º-A).` };
+  }
+  const lim = 2 * p.dlII;
+  if (!v) return { rota: "?", motivo: `Informe o valor estimado: até ${brl(lim)} (2× o limite do art. 75) a inexigibilidade dispensa trâmite na PG (art. 3º, §1º).` };
+  return v > lim ? { rota: "com", motivo: `Inexigibilidade acima de ${brl(lim)} (2× o limite do art. 75): envio à PG (art. 3º, §1º).` }
+                 : { rota: "sem", motivo: `Inexigibilidade até ${brl(lim)}: dispensa de trâmite (art. 3º, §1º).` };
+}
+
+/* Prazo mínimo do edital — Lei 14.133, art. 55 */
+function prazoEdital(m, c) {
+  if (["dlcom", "dlconc"].includes(m.id)) return { dias: 3, txt: "3 dias úteis (art. 75, §3º)" };
+  if (m.id === "conc") {
+    if (c.regime === "integrada") return { dias: 60, txt: "60 dias úteis — contratação integrada (art. 55, II, c)" };
+    if (c.regime === "semi") return { dias: 35, txt: "35 dias úteis — contratação semi-integrada (art. 55, II, d)" };
+    if (c.natureza === "especial") return { dias: 25, txt: "25 dias úteis — obra/serviço especial de engenharia (art. 55, II, b)" };
+    return { dias: 10, txt: "10 dias úteis — obra/serviço comum de engenharia (art. 55, II, a)" };
+  }
+  if (m.id === "pregao" || m.id === "srp") return c.objeto === "servicos" ? { dias: 10, txt: "10 dias úteis — serviços comuns (art. 55, II, a)" } : { dias: 8, txt: "8 dias úteis — bens, menor preço (art. 55, I, a)" };
+  return null;
+}
+
+/* Contexto efetivo (respostas + padrões + valores fixos da modalidade) */
+function contexto(m, ctx) {
+  const c = {};
+  for (const k of Object.keys(PERGUNTAS)) c[k] = PERGUNTAS[k].def;
+  c.valor = 0;
+  Object.assign(c, ctx || {}, m.fixo || {});
+  return c;
+}
+
+/* Roteiro filtrado */
+function roteiro(m, c, p) {
+  const out = [];
+  const pg = rotaPG(m, c, p);
+  for (let id of m.seq) {
+    if (id === "$PG") {
+      if (pg.rota === "com") out.push("m_rcom", "m_djur", "m_mjur");
+      else if (pg.rota !== "na") out.push("m_rsem");
+      continue;
+    }
+    if (id.startsWith("$JA:")) { if (!c.contrataJa) continue; id = id.slice(4); }
+    const e = ETAPAS[id];
+    if (!e) throw new Error("Etapa inexistente: " + id);
+    if (e.w && !e.w(c, m)) continue;
+    out.push(id);
+  }
+  return out;
+}
+
+/* Alertas automáticos */
+function alertas(m, c, p) {
+  const a = [];
+  const v = Number(c.valor) || 0;
+  if (v && m.tipo !== "outro" && v > p.art6xxii * 0.01) a.push({ n: "alto", t: `Valor acima de ${brl(p.art6xxii * 0.01)}: autorização e homologação cabem ao Reitor (Portaria GR 8.321/2024).` });
+  if (["dlcom", "dlsem", "dlconc"].includes(m.id)) {
+    const lim = c.inciso === "I" ? p.dlI : p.dlII;
+    if (v && v >= lim) a.push({ n: "alto", t: `Valor igual ou acima do limite do art. 75, ${c.inciso} (${brl(lim)}): não cabe dispensa por valor.` });
+    a.push({ n: "info", t: "Confira o somatório do exercício para objetos do mesmo ramo (art. 75, §1º) antes de seguir." });
+  }
+  if (m.id === "pd" && c.objeto === "servicos") a.push({ n: "info", t: "Obras e serviços de engenharia para P&D: limite do art. 75, IV, \"c\" e regulamento específico (§5º)." });
+  if (m.id === "conc" && c.categoria !== "D") a.push({ n: "info", t: `Categoria ${c.categoria}: exige Termo de Compromisso da SEF antes da licitação.` });
+  if (m.id === "srp" && !c.contrataJa) a.push({ n: "info", t: "Sem contratação neste processo: os consumos seguem pelo roteiro \"Consumo de ata\"." });
+  if (m.id === "imp") a.push({ n: "info", t: "Hipótese legal é inexigibilidade (art. 74); a planilha v.2025 citava o art. 75 por engano." });
+  return a;
+}
+
+/* Dias úteis (sem feriados) */
+function somaDiasUteis(data, n) {
+  const d = new Date(data.getTime());
+  let k = 0;
+  while (k < n) { d.setDate(d.getDate() + 1); const w = d.getDay(); if (w !== 0 && w !== 6) k++; }
+  return d;
+}
+
+if (typeof module !== "undefined") module.exports = { PARAM_DEFAULT, FASES, PERGUNTAS, ETAPAS, MODALIDADES, MOD, rotaPG, prazoEdital, contexto, roteiro, alertas, somaDiasUteis, brl };
+
+</script>
+<script>
+(() => {
+"use strict";
+const LS_KEY = "svlmat-conferencia-v1";
+const S = {
+  mode: "loading", db: null, user: null, uid: null, canWrite: true,
+  procs: new Map(), params: { ...PARAM_DEFAULT }, paramsSalvos: false,
+  view: "home", cur: null, busca: "", fmod: "", filtro: "todas", open: new Set(),
+  names: {}, dirty: false, modal: null, confirmDel: false
+};
+const app = document.getElementById("app");
+const $modal = document.getElementById("modal");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtData = ts => ts ? new Date(ts).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
+const fmtDia = d => d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
+const parseISO = s => { if (!s) return null; const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+
+/* ---------- Armazenamento ---------- */
+function loadLocal() {
+  try { const raw = localStorage.getItem(LS_KEY); if (raw) { const o = JSON.parse(raw); S.procs = new Map(Object.entries(o.procs || {})); if (o.params) { S.params = { ...PARAM_DEFAULT, ...o.params }; S.paramsSalvos = true; } } } catch (e) {}
+}
+function saveLocal() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ procs: Object.fromEntries(S.procs), params: S.paramsSalvos ? S.params : null })); } catch (e) {}
+}
+function deepMerge(t, s) {
+  for (const k of Object.keys(s)) {
+    const v = s[k];
+    if (v && typeof v === "object" && !Array.isArray(v)) { t[k] = deepMerge(t[k] && typeof t[k] === "object" ? { ...t[k] } : {}, v); }
+    else t[k] = v;
+  }
+  return t;
+}
+const queues = new Map();
+function enqueue(key, fn) {
+  const prev = queues.get(key) || Promise.resolve();
+  const next = prev.then(fn).catch(onWriteError);
+  queues.set(key, next);
+  return next;
+}
+function onWriteError(e) {
+  const code = e && e.code;
+  if (code === "invalid_argument" || code === "not_granted" || code === "revoked") { S.canWrite = false; toast("Você pode consultar, mas não tem permissão para alterar este sistema."); scheduleRender(); }
+  else if (code === "quota_exceeded") toast("Limite de armazenamento atingido. Exclua processos encerrados para liberar espaço.");
+  else toast("Não foi possível salvar agora. Tente de novo em instantes.");
+}
+function stamp(o) { o.atualizadoEm = Date.now(); if (S.uid) o.atualizadoPor = S.uid; return o; }
+function updateProc(id, patch) {
+  if (!S.canWrite) return;
+  stamp(patch);
+  if (S.mode === "db") {
+    // reflexo imediato; o snapshot confirma
+    const p = S.procs.get(id); if (p) S.procs.set(id, deepMerge({ ...p }, patch));
+    return enqueue(id, () => S.db.doc("processos/" + id).update(patch));
+  }
+  const p = S.procs.get(id); if (!p) return;
+  S.procs.set(id, deepMerge({ ...p }, patch)); saveLocal(); scheduleRender();
+}
+async function createProc(body) {
+  const id = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  stamp(body); body.criadoEm = body.atualizadoEm; if (S.uid) body.criadoPor = S.uid;
+  if (S.mode === "db") { S.procs.set(id, { id, ...body }); await enqueue(id, () => S.db.doc("processos/" + id).set(body)); }
+  else { S.procs.set(id, { id, ...body }); saveLocal(); }
+  return id;
+}
+function deleteProc(id) {
+  S.procs.delete(id);
+  if (S.mode === "db") enqueue(id, () => S.db.doc("processos/" + id).delete());
+  else saveLocal();
+}
+function saveParams(p) {
+  S.params = { ...PARAM_DEFAULT, ...p }; S.paramsSalvos = true;
+  if (S.mode === "db") enqueue("config", () => S.db.doc("config/parametros").set(stamp({ ...p })));
+  else saveLocal();
+}
+
+/* ---------- Inicialização ---------- */
+async function boot() {
+  route();
+  let db = null, user = null;
+  try {
+    if (window.claude && typeof window.claude.use === "function") {
+      [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+    }
+  } catch (e) {}
+  S.user = user;
+  if (user) {
+    try { S.uid = await user.id(); } catch (e) {}
+    try { const cw = await user.can("data.write"); if (cw === false) S.canWrite = false; } catch (e) {}
+  }
+  if (db) {
+    S.db = db; S.mode = "db"; S.loaded = false;
+    db.collection("processos").onSnapshot(snap => {
+      S.procs = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }]));
+      S.loaded = true; scheduleRender();
+    }, err => { toast("A conexão com os dados foi interrompida. Recarregue a página."); });
+    db.doc("config/parametros").onSnapshot(s => {
+      if (s.exists) { S.params = { ...PARAM_DEFAULT, ...s.data() }; S.paramsSalvos = true; }
+      scheduleRender();
+    }, () => {});
+  } else {
+    S.mode = "local"; S.loaded = true; loadLocal();
+  }
+  scheduleRender();
+}
+
+/* ---------- Render ---------- */
+let rq = false;
+function isEditing() { const a = document.activeElement; return a && app.contains(a) && (a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && a.type !== "date")); }
+function scheduleRender() { if (isEditing()) { S.dirty = true; return; } if (rq) return; rq = true; requestAnimationFrame(() => { rq = false; render(); }); }
+document.addEventListener("focusout", () => { if (S.dirty) { S.dirty = false; setTimeout(scheduleRender, 0); } });
+
+function route() {
+  const h = (location.hash || "").slice(1);
+  if (h.startsWith("p-")) { S.view = "proc"; S.cur = h.slice(2); }
+  else { S.view = "home"; S.cur = null; }
+  S.confirmDel = false;
+}
+window.addEventListener("hashchange", () => { route(); render(); window.scrollTo(0, 0); });
+
+function modeBadge() {
+  const m = document.getElementById("mode");
+  if (S.mode === "db") { m.className = "mode db"; m.textContent = S.canWrite ? "Compartilhado com a equipe" : "Somente leitura"; }
+  else if (S.mode === "local") { m.className = "mode local"; m.textContent = "Dados salvos neste navegador"; }
+  else { m.className = "mode"; m.textContent = "Carregando…"; }
+  document.querySelectorAll('[data-act="novo"],[data-act="params"]').forEach(b => b.disabled = !S.canWrite && b.dataset.act === "novo");
+}
+
+function analise(p) {
+  const m = MOD[p.modalidade]; if (!m) return null;
+  const c = contexto(m, p.ctx);
+  const ids = roteiro(m, c, S.params);
+  const ch = p.checks || {};
+  let ok = 0, pend = 0, na = 0;
+  for (const id of ids) { const s = ch[id]?.s; if (s === "ok") ok++; else if (s === "pend") pend++; else if (s === "na") na++; }
+  const tot = ids.length, aconf = tot - ok - pend - na;
+  const st = pend ? "pe" : aconf ? "an" : "ok";
+  const stTxt = pend ? `${pend} pendência${pend > 1 ? "s" : ""}` : aconf ? "Em conferência" : "Conferido";
+  return { m, c, ids, ok, pend, na, tot, aconf, st, stTxt };
+}
+function meter(a, cls = "meter") {
+  const w = n => (a.tot ? (n / a.tot * 100) : 0).toFixed(2) + "%";
+  return `<div class="${cls}" role="img" aria-label="${a.ok} conforme, ${a.pend} pendentes, ${a.na} não se aplica, de ${a.tot}"><i class="m-ok" style="width:${w(a.ok)}"></i><i class="m-na" style="width:${w(a.na)}"></i><i class="m-pe" style="width:${w(a.pend)}"></i></div>`;
+}
+
+function render() {
+  modeBadge();
+  if (!S.loaded) { app.innerHTML = `<div class="loading">Carregando processos…</div>`; return; }
+  if (S.view === "proc") { const p = S.procs.get(S.cur); if (p) { renderProc(p); resolveNames(p); return; } }
+  renderHome();
+}
+
+function modCards() {
+  return `<div class="mods">${MODALIDADES.map(m => {
+    const n = roteiro(m, contexto(m, {}), S.params).length;
+    return `<button class="modc" type="button" data-act="novo" data-mod="${m.id}"><span class="g">${esc(m.grupo)}</span><b>${esc(m.nome)}</b><span>${esc(m.desc)}</span><em>${n} etapas no roteiro básico</em></button>`;
+  }).join("")}</div>`;
+}
+
+function renderHome() {
+  const all = [...S.procs.values()].sort((a, b) => (b.atualizadoEm || 0) - (a.atualizadoEm || 0));
+  const q = S.busca.trim().toLowerCase();
+  const list = all.filter(p => (!S.fmod || p.modalidade === S.fmod) && (!q || [p.sei, p.objeto, p.demanda].some(x => String(x || "").toLowerCase().includes(q))));
+  let h = `<div class="home-head"><div><h2>Processos em conferência</h2><p>Escolha um processo para conferir a instrução documento a documento, ou abra um novo a partir do roteiro da modalidade.</p></div>`;
+  if (all.length) h += `<div class="filters"><input id="busca" class="inp" type="search" placeholder="Buscar nº SEI, objeto ou demanda" value="${esc(S.busca)}" aria-label="Buscar processos">
+     <select id="fmod" class="inp" aria-label="Filtrar por modalidade"><option value="">Todas as modalidades</option>${MODALIDADES.map(m => `<option value="${m.id}" ${S.fmod === m.id ? "selected" : ""}>${esc(m.nome)}</option>`).join("")}</select></div>`;
+  h += `</div>`;
+  if (!all.length) {
+    h += `<div class="empty"><h3>Nenhum processo cadastrado ainda</h3><p>Cada processo recebe o checklist da sua modalidade, filtrado pelas respostas (contrato, material permanente, impugnação, recurso…), com a base legal de cada documento, a rota na PG pela Portaria PG 12/2024 e a calculadora de prazos. Comece escolhendo o roteiro:</p>${modCards()}</div>`;
+  } else if (!list.length) {
+    h += `<div class="empty"><p>Nenhum processo corresponde à busca.</p></div>`;
+  } else {
+    h += `<div class="plist">${list.map(p => {
+      const a = analise(p); if (!a) return "";
+      return `<button class="prow" type="button" data-act="abrir" data-id="${esc(p.id)}">
+        <div class="l1"><span class="sei">${esc(p.sei || "Sem nº SEI")}</span><span class="obj">${esc(p.objeto || "")}</span></div>
+        <div class="right"><span class="pill ${a.st}">${a.stTxt}</span>${meter(a)}</div>
+        <div class="l2"><span>${esc(a.m.nome)}</span>${p.demanda ? `<span>Demanda <span class="mono">${esc(p.demanda)}</span></span>` : ""}<span>${a.ok + a.na}/${a.tot} conferidos</span><span>Atualizado ${fmtData(p.atualizadoEm)}</span></div>
+      </button>`;
+    }).join("")}</div>`;
+    h += `<details style="margin-top:22px"><summary class="btn ghost" style="display:inline-flex">Ver os roteiros disponíveis</summary><div style="margin-top:10px">${modCards()}</div></details>`;
+  }
+  app.innerHTML = h;
+}
+
+function quest(k, c, dis) {
+  const q = PERGUNTAS[k];
+  if (k === "valor") return `<label class="q"><span>Valor estimado</span><input id="q-valor" class="inp mono" inputmode="decimal" placeholder="0,00" value="${c.valor ? Number(c.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 }) : ""}" ${dis}><small>Usado nos alertas de alçada, rota PG e habilitação.</small></label>`;
+  if (q.tipo === "bool") return `<div class="q"><span>${esc(q.label)}</span><div class="tog" role="group" aria-label="${esc(q.label)}"><button type="button" class="${c[k] ? "on" : ""}" data-act="q" data-k="${k}" data-v="1" ${dis} aria-pressed="${!!c[k]}">Sim</button><button type="button" class="${!c[k] ? "on" : ""}" data-act="q" data-k="${k}" data-v="0" ${dis} aria-pressed="${!c[k]}">Não</button></div>${q.ajuda ? `<small>${esc(q.ajuda)}</small>` : ""}</div>`;
+  return `<label class="q"><span>${esc(q.label)}</span><select id="q-${k}" class="inp" data-q="${k}" ${dis}>${q.ops.map(([v, l]) => `<option value="${v}" ${c[k] === v ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></label>`;
+}
+
+function renderProc(p) {
+  const a = analise(p); const { m, c } = a;
+  const dis = S.canWrite ? "" : "disabled";
+  const pg = rotaPG(m, c, S.params);
+  const al = alertas(m, c, S.params);
+  const ch = p.checks || {};
+  const idx = new Map(a.ids.map((id, i) => [id, i + 1]));
+  const vis = a.ids.filter(id => { const s = ch[id]?.s; return S.filtro === "todas" || (S.filtro === "abertas" && !s) || (S.filtro === "pend" && s === "pend"); });
+
+  let h = `<div class="back"><a class="btn ghost" href="#">← Todos os processos</a></div>
+  <section class="phead">
+    <div class="sei">${p.sei ? "Processo SEI " + esc(p.sei) : "Processo sem nº SEI"}</div>
+    <h2>${esc(p.objeto || "Objeto não informado")}</h2>
+    <div class="meta"><span>${esc(m.nome)}</span><span class="pill ${pg.rota === "sem" ? "ok" : pg.rota === "com" ? "pe" : "na"}">${{ sem: "Sem trâmite na PG", com: "Vai à PG", na: "Sem análise da PG", "?": "Rota PG: informe o valor" }[pg.rota]}</span>${al.some(x => x.n === "alto") ? `<span class="pill bad">${al.filter(x => x.n === "alto").length} alerta${al.filter(x => x.n === "alto").length > 1 ? "s" : ""}</span>` : ""}${p.demanda ? `<span>Demanda <span class="mono">${esc(p.demanda)}</span></span>` : ""}<span>Criado ${fmtData(p.criadoEm)}</span><span>Atualizado ${fmtData(p.atualizadoEm)}${p.atualizadoPor && S.names[p.atualizadoPor] ? " por " + esc(S.names[p.atualizadoPor]) : ""}</span>
+      ${S.canWrite ? `<button class="btn ghost more" type="button" data-act="editar">Editar dados</button>` : ""}</div>
+    ${meter(a, "bigmeter")}
+    <div class="counts"><span class="pill ok">${a.ok} conforme</span><span class="pill pe">${a.pend} pendente${a.pend === 1 ? "" : "s"}</span><span class="pill na">${a.na} não se aplica</span><span class="pill an">${a.aconf} a conferir</span><span class="fine">de ${a.tot} etapas</span></div>
+  </section>
+  <div class="grid"><div>
+    <div class="tabs" role="group" aria-label="Filtrar etapas">
+      ${[["todas", "Todas"], ["abertas", "A conferir"], ["pend", "Pendências"]].map(([k, l]) => `<button type="button" class="tab" data-act="filtro" data-f="${k}" aria-pressed="${S.filtro === k}">${l}</button>`).join("")}
+      <button type="button" class="tab" data-act="expandir">${S.open.size ? "Recolher detalhes" : "Expandir detalhes"}</button>
+    </div>`;
+
+  if (!vis.length) h += `<div class="empty"><p>${S.filtro === "pend" ? "Nenhuma pendência registrada." : "Todas as etapas já foram conferidas."}</p></div>`;
+  for (const f of FASES) {
+    const fs = vis.filter(id => ETAPAS[id].f === f.id); if (!fs.length) continue;
+    h += `<section class="fase"><h3><span class="fc">${f.id}</span>${esc(f.n)}</h3><div class="steps">`;
+    for (const id of fs) {
+      const e = ETAPAS[id], k = ch[id] || {}, s = k.s || "";
+      const v = typeof e.v === "function" ? e.v(c, m, S.params) : (e.v || []);
+      const op = S.open.has(id);
+      h += `<div class="step ${s ? "s-" + s : ""}" id="st-${id}"><div class="bar"></div><div class="num">${String(idx.get(id)).padStart(2, "0")}</div><div class="body">
+        <div class="srow"><div class="stitle"><div class="t">${esc(e.t)}</div><div class="sub"><span class="chip">${esc(e.r || "")}</span>${k.ref ? `<span class="chip ref">${esc(k.ref)}</span>` : ""}${e.b ? `<span>${esc(e.b)}</span>` : ""}
+          <button type="button" class="btn ghost more" data-act="det" data-id="${id}" aria-expanded="${op}">${op ? "Ocultar" : (v.length || e.mod ? "O que verificar" : "Anotar")}</button></div></div>
+          <div class="seg" role="group" aria-label="Situação">
+            <button type="button" class="${s === "ok" ? "on ok" : ""}" data-act="st" data-id="${id}" data-s="ok" ${dis} aria-pressed="${s === "ok"}">Conforme</button>
+            <button type="button" class="${s === "pend" ? "on pend" : ""}" data-act="st" data-id="${id}" data-s="pend" ${dis} aria-pressed="${s === "pend"}">Pendência</button>
+            <button type="button" class="${s === "na" ? "on na" : ""}" data-act="st" data-id="${id}" data-s="na" ${dis} aria-pressed="${s === "na"}">N/A</button>
+          </div></div>
+        ${k.nota && !op ? `<div class="nota">${esc(k.nota)}</div>` : ""}
+        ${op ? `<div class="det">
+          ${v.length ? `<div><div class="lab">Verificar</div><ul>${v.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+          ${e.mod ? `<div><div class="lab">Texto-modelo</div><div class="modelo" id="mod-${id}">${esc(e.mod)}</div><button type="button" class="btn more" style="margin-top:6px" data-act="copiar" data-id="${id}">Copiar texto</button></div>` : ""}
+          <div class="fields"><label>Documento SEI nº<input class="inp mono" id="ref-${id}" data-f="ref" data-id="${id}" value="${esc(k.ref || "")}" placeholder="ex.: 0123456" ${dis}></label>
+          <label>Observação<input class="inp" id="nota-${id}" data-f="nota" data-id="${id}" value="${esc(k.nota || "")}" placeholder="O que falta, quem vai providenciar…" ${dis}></label></div>
+          ${k.em ? `<div class="fine">Marcado em ${fmtData(k.em)}${k.por && S.names[k.por] ? " por " + esc(S.names[k.por]) : ""}</div>` : ""}
+        </div>` : ""}
+      </div></div>`;
+    }
+    h += `</div></section>`;
+  }
+  h += `</div><aside class="side">`;
+
+  // Rota PG
+  const rotaTit = { sem: "Sem trâmite na PG", com: "Com encaminhamento à PG", na: "Sem análise da PG", "?": "Rota na PG a definir" }[pg.rota];
+  h += `<div class="card"><h3>Procuradoria Geral</h3><div class="rota ${pg.rota === "?" ? "q" : pg.rota}"><b>${rotaTit}</b><span>${esc(pg.motivo)}</span></div>
+    ${pg.rota === "sem" ? `<div class="fine">Use o relatório de verificação "sem PG" da modalidade, na versão vigente no site da PG.</div>` : ""}
+    ${al.map(x => `<div class="alert ${x.n}">${esc(x.t)}</div>`).join("")}</div>`;
+
+  // Perguntas
+  if (m.perg.length) h += `<div class="card"><h3>Características do processo</h3><div class="fine">As respostas ajustam o roteiro: etapas entram ou saem automaticamente.</div>${m.perg.map(k => quest(k, c, dis)).join("")}</div>`;
+
+  // Prazos
+  const pz = prazoEdital(m, c);
+  const dt = p.datas || {};
+  const div = parseISO(dt.divulg), ass = parseISO(dt.assin), orc = parseISO(dt.orcam);
+  let calc = `<div class="calc">`;
+  if (pz) calc += `<label>Divulgação do edital/aviso<input type="date" class="inp" id="dt-divulg" data-dt="divulg" value="${esc(dt.divulg || "")}" ${dis}></label>
+     <div class="out">Prazo mínimo: ${esc(pz.txt)}${div ? `<br>Propostas/sessão a partir de <b>${fmtDia(somaDiasUteis(div, pz.dias))}</b>` : ""}</div>
+     <label>Data do orçamento mais antigo<input type="date" class="inp" id="dt-orcam" data-dt="orcam" value="${esc(dt.orcam || "")}" ${dis}></label>`;
+  if (pz && orc && div) {
+    const lim = new Date(div); lim.setMonth(lim.getMonth() - 6);
+    calc += `<div class="out">${orc >= lim ? "Orçamento dentro dos 6 meses anteriores à divulgação." : `<span style="color:var(--bad)">Orçamento com mais de 6 meses da divulgação (limite: ${fmtDia(lim)}). Atualize a pesquisa.</span>`}</div>`;
+  }
+  if (m.tipo !== "outro" || m.id === "consumo") {
+    const dias = m.tipo === "lic" || m.id === "consumo" ? 20 : 10;
+    calc += `<label>Assinatura do contrato/instrumento<input type="date" class="inp" id="dt-assin" data-dt="assin" value="${esc(dt.assin || "")}" ${dis}></label>
+     <div class="out">Publicação no PNCP em até ${dias} dias úteis (art. 94)${ass ? `: até <b>${fmtDia(somaDiasUteis(ass, dias))}</b>` : ""}${m.id === "conc" && ass ? `<br>Quantitativos e preços unitários: até <b>${fmtDia(somaDiasUteis(ass, 25))}</b>` : ""}</div>`;
+  }
+  calc += `<div class="fine">Contagem em dias úteis de segunda a sexta; feriados e pontos facultativos não são descontados.</div></div>`;
+  if (m.id !== "passagem") h += `<div class="card"><h3>Prazos</h3>${calc}</div>`;
+
+  // Ações
+  h += `<div class="card"><h3>Relatório e ações</h3>
+    <button class="btn" type="button" data-act="relatorio">Baixar relatório de conferência</button>
+    <button class="btn" type="button" data-act="copiarrel">Copiar pendências</button>
+    ${S.canWrite ? (S.confirmDel ? `<div class="alert alto">Excluir este processo e toda a conferência? Isso não pode ser desfeito.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn danger" type="button" data-act="excluir-sim">Excluir definitivamente</button><button class="btn" type="button" data-act="excluir-nao">Cancelar</button></div>` : `<button class="btn danger" type="button" data-act="excluir">Excluir processo</button>`) : ""}
+    </div>`;
+  h += `<div class="fine" style="padding:0 4px">Parâmetros de ${esc(S.params.ano)}${S.paramsSalvos ? "" : " (valores padrão — confira em Parâmetros do ano)"}.</div>`;
+  h += `</aside></div>`;
+  app.innerHTML = h;
+}
+
+async function resolveNames(p) {
+  if (!S.user || typeof S.user.profiles !== "function") return;
+  const ids = new Set([p.atualizadoPor, p.criadoPor, ...Object.values(p.checks || {}).map(k => k.por)].filter(x => x && !(x in S.names)));
+  if (!ids.size) return;
+  try {
+    const ps = await S.user.profiles([...ids]);
+    let changed = false;
+    for (const id of ids) { S.names[id] = (ps && ps[id] && ps[id].name) || ""; changed = true; }
+    if (changed) scheduleRender();
+  } catch (e) { for (const id of ids) S.names[id] = ""; }
+}
+
+/* ---------- Relatório ---------- */
+function relatorio(p, soPend) {
+  const a = analise(p); const { m, c } = a; const ch = p.checks || {};
+  const pg = rotaPG(m, c, S.params);
+  const lab = { ok: "CONFORME", pend: "PENDÊNCIA", na: "N/A", "": "A CONFERIR" };
+  let t = `RELATÓRIO DE CONFERÊNCIA DE INSTRUÇÃO PROCESSUAL\n\nProcesso SEI: ${p.sei || "—"}\nObjeto: ${p.objeto || "—"}\nModalidade: ${m.nome}\n${p.demanda ? "Demanda: " + p.demanda + "\n" : ""}Rota na PG: ${pg.motivo}\nGerado em: ${new Date().toLocaleString("pt-BR")}\n\nResumo: ${a.ok} conforme · ${a.pend} pendências · ${a.na} não se aplica · ${a.aconf} a conferir (de ${a.tot})\n`;
+  if (soPend) {
+    const pend = a.ids.filter(id => ch[id]?.s === "pend");
+    t = `Pendências — Processo SEI ${p.sei || "—"} (${m.nome})\n\n` + (pend.length ? pend.map(id => `• ${ETAPAS[id].t}${ch[id].nota ? " — " + ch[id].nota : ""}`).join("\n") : "Nenhuma pendência registrada.");
+    return t;
+  }
+  for (const f of FASES) {
+    const ids = a.ids.filter(id => ETAPAS[id].f === f.id); if (!ids.length) continue;
+    t += `\n${f.n.toUpperCase()}\n`;
+    for (const id of ids) {
+      const k = ch[id] || {};
+      t += `${String(a.ids.indexOf(id) + 1).padStart(2, "0")}. [${lab[k.s || ""]}] ${ETAPAS[id].t}${k.ref ? " (doc. SEI " + k.ref + ")" : ""}${k.nota ? "\n    Obs.: " + k.nota : ""}\n`;
+    }
+  }
+  return t;
+}
+async function copiar(txt) {
+  try { await navigator.clipboard.writeText(txt); toast("Copiado."); return true; } catch (e) { toast("Não foi possível copiar automaticamente."); return false; }
+}
+
+function baixarArquivo(nome, txt, tipo) {
+  const blob = new Blob([txt], { type: tipo || "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const el = document.createElement("a"); el.href = url; el.download = nome; document.body.appendChild(el); el.click(); el.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+/* ---------- Modais ---------- */
+function openModal(html) { $modal.innerHTML = `<div class="ov" data-act="fechar-ov"><div class="dlg" role="dialog" aria-modal="true">${html}</div></div>`; const f = $modal.querySelector("input,select"); if (f) f.focus(); }
+function closeModal() { $modal.innerHTML = ""; }
+
+function modalNovo(modId, p) {
+  const ed = !!p;
+  openModal(`<h2>${ed ? "Editar dados do processo" : "Novo processo"}</h2>
+   <form id="f-novo">
+    <div style="display:flex;flex-direction:column;gap:10px">
+    <label>Nº do processo SEI<input id="n-sei" class="inp mono" placeholder="154.00000000/2026-00" value="${esc(p?.sei || "")}"></label>
+    <label>Objeto<input id="n-obj" class="inp" placeholder="Ex.: Aquisição de reagentes para o DEBIQ" value="${esc(p?.objeto || "")}" required></label>
+    <div class="two"><label>Nº da demanda<input id="n-dem" class="inp mono" value="${esc(p?.demanda || "")}"></label>
+    <label>Modalidade / roteiro<select id="n-mod" class="inp" ${ed ? "disabled" : ""}>${["Licitação", "Contratação direta", "Outros"].map(g => `<optgroup label="${g}">${MODALIDADES.filter(m => m.grupo === g).map(m => `<option value="${m.id}" ${(p?.modalidade || modId) === m.id ? "selected" : ""}>${esc(m.nome)}</option>`).join("")}</optgroup>`).join("")}</select></label></div>
+    <div class="err" id="n-err" hidden></div>
+    <div class="row"><button type="button" class="btn" data-act="fechar">Cancelar</button><button type="submit" class="btn pri">${ed ? "Salvar" : "Criar e abrir checklist"}</button></div>
+    </div></form>`);
+  document.getElementById("f-novo").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const sei = document.getElementById("n-sei").value.trim(), objeto = document.getElementById("n-obj").value.trim(), demanda = document.getElementById("n-dem").value.trim(), modalidade = document.getElementById("n-mod").value;
+    if (!objeto) { const e = document.getElementById("n-err"); e.textContent = "Informe o objeto do processo."; e.hidden = false; return; }
+    if (ed) { updateProc(p.id, { sei, objeto, demanda }); closeModal(); scheduleRender(); return; }
+    const id = await createProc({ sei, objeto, demanda, modalidade, ctx: {}, checks: {}, datas: {} });
+    closeModal(); location.hash = "p-" + id;
+  });
+}
+
+function modalParams() {
+  const p = S.params, dis = S.canWrite ? "" : "disabled";
+  const f = (k, l, help) => `<label>${l}<input id="pm-${k}" class="inp mono" inputmode="decimal" value="${Number(p[k]).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}" ${dis}>${help ? `<span class="fine">${help}</span>` : ""}</label>`;
+  openModal(`<h2>Parâmetros do ano</h2>
+   <p class="fine" style="margin:0">Os valores da Lei 14.133 são atualizados todo 1º de janeiro pelo IPCA-E e divulgados no PNCP (art. 182). Os padrões abaixo são de 2025; confira o decreto do exercício antes de usar.${S.mode === "db" ? " A alteração vale para toda a equipe." : ""}</p>
+   <form id="f-par"><div style="display:flex;flex-direction:column;gap:10px">
+    <label>Exercício<input id="pm-ano" class="inp mono" inputmode="numeric" value="${esc(p.ano)}" ${dis}></label>
+    <div class="two">${f("dlI", "Limite art. 75, I (R$)", "Obras, engenharia, manutenção de veículos")}${f("dlII", "Limite art. 75, II (R$)", "Compras e outros serviços")}</div>
+    ${f("art6xxii", "Valor do art. 6º, XXII — grande vulto (R$)", "Base da alçada do Dirigente (1%) e do teto de P&D sem PG (0,5%)")}
+    <div class="two">${f("ufesp", "UFESP (R$)", "100 UFESPs: exceção de conta fora do BB")}${f("pd300", "Valor do art. 70, III — P&D (R$)", "Dispensa de habilitação em produto para pesquisa")}</div>
+    <div class="err" id="pm-err" hidden></div>
+    <div class="row"><button type="button" class="btn" data-act="fechar">${S.canWrite ? "Cancelar" : "Fechar"}</button>${S.canWrite ? `<button type="submit" class="btn pri">Salvar parâmetros</button>` : ""}</div>
+   </div></form>`);
+  document.getElementById("f-par").addEventListener("submit", ev => {
+    ev.preventDefault();
+    const num = id => parseBR(document.getElementById("pm-" + id).value);
+    const o = { ano: parseInt(document.getElementById("pm-ano").value, 10), dlI: num("dlI"), dlII: num("dlII"), art6xxii: num("art6xxii"), ufesp: num("ufesp"), pd300: num("pd300") };
+    if (Object.values(o).some(v => !isFinite(v) || v <= 0)) { const e = document.getElementById("pm-err"); e.textContent = "Preencha todos os campos com valores positivos (use vírgula para centavos)."; e.hidden = false; return; }
+    saveParams(o); closeModal(); toast("Parâmetros salvos."); scheduleRender();
+  });
+}
+function parseBR(s) { s = String(s || "").replace(/[^\d,.-]/g, ""); if (s.includes(",")) s = s.replace(/\./g, "").replace(",", "."); return parseFloat(s); }
+
+/* ---------- Eventos ---------- */
+document.addEventListener("click", async ev => {
+  const t = ev.target.closest("[data-act]"); if (!t) return;
+  const act = t.dataset.act;
+  const p = S.cur ? S.procs.get(S.cur) : null;
+  if (act === "fechar-ov") { if (ev.target === t) closeModal(); return; }
+  if (act === "fechar") return closeModal();
+  if (act === "novo") { if (!S.canWrite) return toast("Você está em modo somente leitura."); return modalNovo(t.dataset.mod || "pregao"); }
+  if (act === "params") return modalParams();
+  if (act === "exportar") {
+    const dados = { app: "conferencia-processos-svlmat", versao: 1, exportadoEm: new Date().toISOString(), params: S.paramsSalvos ? S.params : null, procs: Object.fromEntries(S.procs) };
+    baixarArquivo(`backup-conferencia-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(dados, null, 2), "application/json");
+    return toast("Backup baixado. Guarde o arquivo em local seguro.");
+  }
+  if (act === "importar") return document.getElementById("imp-file").click();
+  if (act === "abrir") { location.hash = "p-" + t.dataset.id; return; }
+  if (!p) return;
+  if (act === "editar") return modalNovo(null, p);
+  if (act === "filtro") { S.filtro = t.dataset.f; return render(); }
+  if (act === "expandir") { if (S.open.size) S.open.clear(); else analise(p).ids.forEach(id => S.open.add(id)); return render(); }
+  if (act === "det") { const id = t.dataset.id; S.open.has(id) ? S.open.delete(id) : S.open.add(id); return render(); }
+  if (act === "st") {
+    const id = t.dataset.id, s = t.dataset.s, cur = p.checks?.[id]?.s;
+    const novo = cur === s ? "" : s;
+    const patch = { checks: { [id]: { s: novo, em: Date.now() } } };
+    if (S.uid) patch.checks[id].por = S.uid;
+    updateProc(p.id, patch);
+    if (novo === "pend") S.open.add(id);
+    return scheduleRender();
+  }
+  if (act === "q") { updateProc(p.id, { ctx: { [t.dataset.k]: t.dataset.v === "1" } }); return scheduleRender(); }
+  if (act === "copiar") { const e = ETAPAS[t.dataset.id]; return copiar(e.mod || ""); }
+  if (act === "copiarrel") return copiar(relatorio(p, true));
+  if (act === "relatorio") {
+    const txt = relatorio(p, false);
+    const nome = `conferencia-${(p.sei || "processo").replace(/[^\w.-]+/g, "_")}.txt`;
+    baixarArquivo(nome, txt); return;
+  }
+  if (act === "excluir") { S.confirmDel = true; return render(); }
+  if (act === "excluir-nao") { S.confirmDel = false; return render(); }
+  if (act === "excluir-sim") { deleteProc(p.id); S.confirmDel = false; location.hash = ""; toast("Processo excluído."); return; }
+});
+
+document.addEventListener("change", ev => {
+  const el = ev.target; const p = S.cur ? S.procs.get(S.cur) : null;
+  if (el.id === "fmod") { S.fmod = el.value; return render(); }
+  if (!p || !S.canWrite) return;
+  if (el.dataset.q) { updateProc(p.id, { ctx: { [el.dataset.q]: el.value } }); return scheduleRender(); }
+  if (el.id === "q-valor") { const v = parseBR(el.value); updateProc(p.id, { ctx: { valor: isFinite(v) ? v : 0 } }); return scheduleRender(); }
+  if (el.dataset.dt) { updateProc(p.id, { datas: { [el.dataset.dt]: el.value } }); return scheduleRender(); }
+  if (el.dataset.f && el.dataset.id) {
+    const cur = p.checks?.[el.dataset.id]?.[el.dataset.f] || "";
+    if (cur !== el.value.trim()) updateProc(p.id, { checks: { [el.dataset.id]: { [el.dataset.f]: el.value.trim() } } });
+    return scheduleRender();
+  }
+});
+document.addEventListener("input", ev => {
+  if (ev.target.id === "busca") { S.busca = ev.target.value; const pos = ev.target.selectionStart; renderHome(); const b = document.getElementById("busca"); if (b) { b.focus(); b.setSelectionRange(pos, pos); } }
+});
+document.getElementById("imp-file").addEventListener("change", async ev => {
+  const f = ev.target.files && ev.target.files[0]; ev.target.value = ""; if (!f) return;
+  try {
+    const o = JSON.parse(await f.text());
+    if (!o || o.app !== "conferencia-processos-svlmat" || typeof o.procs !== "object") throw new Error("formato");
+    let novos = 0, atual = 0;
+    for (const [id, p] of Object.entries(o.procs)) {
+      const ex = S.procs.get(id);
+      if (!ex || (p.atualizadoEm || 0) > (ex.atualizadoEm || 0)) { S.procs.set(id, { ...p, id }); ex ? atual++ : novos++; }
+    }
+    if (o.params && !S.paramsSalvos) { S.params = { ...PARAM_DEFAULT, ...o.params }; S.paramsSalvos = true; }
+    saveLocal(); render();
+    toast(`Backup importado: ${novos} processo(s) novo(s), ${atual} atualizado(s).`);
+  } catch (e) { toast("Arquivo inválido: escolha um backup gerado por este sistema."); }
+});
+document.addEventListener("keydown", ev => { if (ev.key === "Escape" && $modal.innerHTML) closeModal(); });
+
+boot();
+})();
+
+</script>
+
+</body>
+</html>
